@@ -1,0 +1,109 @@
+.floating-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  min-height: 100vh;
+  background-color: #0088ff;
+font-family: 'Jua', sans-serif;
+
+}
+
+.image-wrapper {
+  position: relative;
+  width: 150px;
+  height: 150px;
+}
+
+.floating-image {
+  width: 100%;
+  height: auto;
+  animation: float 4s ease-in-out infinite;
+}
+
+.shadowh {
+  position: absolute;
+  bottom: -10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 10px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  filter: blur(4px);
+  animation: shadow-scale 4s ease-in-out infinite;
+}
+
+.text-section {
+  max-width: 400px;
+  opacity: 0;
+  animation: fadeIn 2s ease-in-out 1s forwards;
+}
+
+.text-section h2 {
+  font-size: 2rem;
+  color: #ffffff;
+  margin-bottom: 10px;
+}
+
+.text-section p {
+  font-size: 1.1rem;
+  color: #333;
+}
+
+
+/* Keyframes Animation */
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-20px); }
+  100% { transform: translateY(0px); }
+}
+
+@keyframes shadow-scale {
+  0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.3; }
+  50% { transform: translateX(-50%) scale(0.8); opacity: 0.1; }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+/* Slider mitra kami */
+.slider {
+  overflow: hidden;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+.slide-track {
+  display: flex;
+  animation: scroll 20s linear infinite;
+  width: max-content;
+}
+
+.slide {
+  min-width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.slide img {
+  width: 150px;
+  height: auto;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}

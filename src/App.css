@@ -1,0 +1,317 @@
+
+
+.navbar-custom {
+  background-color: #12294A;
+
+}
+
+.jua-regular {
+  font-family: "Jua", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.text-justify {
+  text-align: justify;
+}
+
+.btn-hover {
+  background-color: #278cff;
+}
+
+.btn-hover:hover{
+  background-color: #637ea3;
+}
+
+/* sidebar */
+.sidebar-custom {
+  width: 250px;
+  height: 100vh;
+  background-color: #0047ab; /* Warna biru seperti di gambar */
+  color: white;
+  font-family: 'Fredoka', sans-serif; /* Font mirip dengan gambar */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  z-index: 1050;
+  border-right: 1px solid #ffffff50;
+}
+
+.sidebar-custom h5 {
+  font-weight: bold;
+  font-size: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.sidebar-custom .nav-link {
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.sidebar-custom .nav-link:hover {
+  text-decoration: underline;
+}
+
+.sidebar-custom .bottom-logo {
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-top: auto;
+}
+
+.sidebar-custom .bottom-logo img {
+  width: 20px;
+  margin-right: 0.5rem;
+  vertical-align: middle;
+}
+
+.padding-top {
+  padding-top: 10px;
+
+  padding-bottom: 30px;
+}
+
+.rounded-custom {
+  border-radius: 2%;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+.hover:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 0px 8px rgba(30, 129, 243, 1);
+}
+
+/* responsif */
+/* Pastikan gambar logo tidak overflow */
+footer img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Navbar responsif (opsional jika ingin collapsed di layar kecil) */
+
+
+/* Footer responsif */
+@media (max-width: 768px) {
+  footer .row {
+    flex-direction: column;
+  }
+
+  footer .col-12 {
+    margin-bottom: 1.5rem;
+  }
+
+  footer .d-flex.justify-content-between.flex-end {
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  footer .d-flex.justify-content-between.align-items-center.flex-wrap {
+    flex-direction: column;
+    text-align: center;
+    gap: 1rem;
+  }
+}
+
+
+/* Modal overlay */
+.modal {
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* dark overlay */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+}
+
+/* Modal content box */
+.modal-content {
+  background: white;
+  padding: 30px;
+  border-radius: 8px;
+  width: 100%;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+  z-index: 1051;
+}
+
+/* Optional styling for inputs and buttons */
+.modal-content input {
+  display: block;
+  width: 100%;
+  margin-bottom: 15px;
+  padding: 10px;
+  font-size: 1rem;
+}
+
+.modal-content button {
+  padding: 10px 15px;
+  margin-right: 10px;
+}
+
+.shadow-custom {
+box-shadow: 0px 2px 7px 0px rgba(0, 0, 0, 0.3);
+}
+
+.shadow-card {
+  box-shadow: 0px 2px 7px 0px rgba(0, 0, 0, 0.3);
+}
+
+
+
+.star {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #12294A;
+  border-radius: 50%;
+  pointer-events: none;
+  box-shadow: 0 0 10px #12294A;
+  animation: fadeOut 0.5s forwards;
+  z-index: 9999;
+}
+
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+    transform: scale(2);
+  }
+}
+
+.scroll-progress {
+  height: 4px;
+  background-color: #12294A;
+  position: fixed;
+  top: 95px; /* posisi sedikit di bawah navbar */
+  left: 0;
+  width: 0%;
+  z-index: 9998;
+  transition: width 0.2s ease-out;
+}
+
+/* Animasi buka/tutup filter */
+.filter-container {
+  transition: all 0.4s ease-in-out;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateY(-20px);
+  max-height: 0;
+}
+
+.filter-container.show {
+  opacity: 1;
+  transform: translateY(0);
+  max-height: 1000px;
+}
+
+/* Animasi muncul saat scroll */
+.fade-in {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: all 0.6s ease-out;
+}
+
+.fade-in.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.fs {
+  font-size: 18px;
+}
+
+@keyframes scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes glowChange {
+  0% {
+    box-shadow: 0 0 12px 0px #ffffff;
+  }
+  25% {
+    box-shadow: 0 0 12px 0px #ffeb3b;
+  }
+  50% {
+    box-shadow: 0 0 12px 0px #ff4081;
+  }
+  75% {
+    box-shadow: 0 0 12px 0px #00e5ff;
+  }
+  100% {
+    box-shadow: 0 0 12px 0px #ffffff;
+  }
+}
+
+.blinking-cursor {
+  display: inline-block;
+  width: 1ch;
+  animation: blink 0.8s infinite;
+}
+
+@keyframes blink {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes rainbowShadow {
+  0% {
+    box-shadow: 0 4px 15px rgba(251, 255, 0, 0.5);     /* merah */
+  }
+  25% {
+    box-shadow: 0 4px 15px rgb(0, 132, 255);   /* kuning */
+  }
+  50% {
+    box-shadow: 0 4px 15px rgba(0, 255, 0, 0.5);     /* hijau */
+  }
+  75% {
+    box-shadow: 0 4px 15px rgb(255, 255, 255);     /* biru */
+  }
+  100% {
+    box-shadow: 0 4px 15px rgb(255, 255, 255);   /* ungu */
+  }
+}
+
+/* Tambahkan di CSS global kamu */
+::-webkit-scrollbar {
+  display: none;
+}
+
+.btn-custom {
+  background-color: #ffffff;
+  padding: 10px 20px 10px 20px;
+  margin-top: 20px;
+  color: #12294A;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+}
+
+.btn-custom-nooutline {
+  background-color: #12294A;
+  padding: 10px 20px 10px 20px;
+  margin-top: 20px;
+  color: #ffffff;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+}

@@ -1,0 +1,34 @@
+
+.navbar-custom {
+  background-color: #1E81F3;
+}
+
+.btn-outline-custom-white {
+  color: white;
+  border: 1px solid white;
+  background-color: transparent;
+}
+
+.btn-outline-custom-white:hover {
+  background-color: white;
+  color: black;
+}
+
+.jua-regular {
+  font-family: "Jua", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+@keyframes autoScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+.rounded-corners {
+  border-radius: 50%;
+}
