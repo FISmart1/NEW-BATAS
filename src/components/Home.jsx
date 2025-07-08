@@ -315,7 +315,7 @@ function Home() {
         <h2 className="text-center fw-bold display-6 mb-3 text-white">
           🌟 Siswa Berposisi Khusus
         </h2>
-        <p className="text-center mb-5 text-white fs-5">
+        <p className="text-center mb-4 text-white fs-5">
           Alumni yang telah bekerja di berbagai perusahaan ternama
         </p>
 
