@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
 import { useNavigate } from "react-router-dom";
 
 function AddProject() {
@@ -20,13 +18,15 @@ function AddProject() {
   const [isEdit, setIsEdit] = useState(false);
 
   const fetchProject = async () => {
-    const res = await axios.get("http://localhost:3006/api/projects");
-    setProjectList(res.data || []);
+    const res = await fetch("http://localhost:3006/api/projects");
+    const data = await res.json();
+    setProjectList(data || []);
   };
 
   const fetchSiswa = async () => {
-    const res = await axios.get("http://localhost:3006/api/getsiswa");
-    setSiswaList(res.data || []);
+    const res = await fetch("http://localhost:3006/api/getsiswa");
+    const data = await res.json();
+    setSiswaList(data || []);
   };
 
   useEffect(() => {
@@ -42,7 +42,8 @@ function AddProject() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-    data.append("id", formData.id || uuidv4());
+    const generatedId = formData.id || Date.now().toString();
+    data.append("id", generatedId);
     data.append("name_project", formData.name_project);
     data.append("deskripsi", formData.deskripsi);
     data.append("link_web", formData.link_web);
@@ -52,12 +53,19 @@ function AddProject() {
 
     try {
       if (isEdit) {
-        await axios.put(`http://localhost:3006/api/project/${formData.id}`, data);
+        await fetch(`http://localhost:3006/api/project/${generatedId}`, {
+          method: "PUT",
+          body: data,
+        });
         alert("Project diperbarui!");
       } else {
-        await axios.post("http://localhost:3006/api/project/upload", data);
+        await fetch("http://localhost:3006/api/project/upload", {
+          method: "POST",
+          body: data,
+        });
         alert("Project ditambahkan!");
       }
+
       fetchProject();
       setShowModal(false);
       setFormData({
@@ -92,7 +100,9 @@ function AddProject() {
   const handleDelete = async (id) => {
     if (window.confirm("Hapus project ini?")) {
       try {
-        await axios.delete(`http://localhost:3006/api/delproject/${id}`);
+        await fetch(`http://localhost:3006/api/delproject/${id}`, {
+          method: "DELETE",
+        });
         alert("Project dihapus.");
         fetchProject();
       } catch (err) {
@@ -101,20 +111,17 @@ function AddProject() {
       }
     }
   };
-  const truncate = (text, maxLength = 50) => {
-  if (!text) return "";
-  return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
-};
 
+  const truncate = (text, maxLength = 50) => {
+    if (!text) return "";
+    return text.length > maxLength ? text.slice(0, maxLength) + "..." : text;
+  };
 
   return (
     <div className="container py-4 mt-5 mb-5">
       <h2 className="h4 fw-bold mb-4 mt-5">Data Project</h2>
       <div className="d-flex gap-4">
-        <button
-          onClick={() => navigate(-1)}
-          className="btn btn-primary mb-4"
-        >
+        <button onClick={() => navigate(-1)} className="btn btn-primary mb-4">
           &larr; Back
         </button>
         <button
@@ -145,7 +152,7 @@ function AddProject() {
               <th>Nama Project</th>
               <th>Deskripsi</th>
               <th>Link</th>
-              <th>tools</th>
+              <th>Tools</th>
               <th>Nama Siswa</th>
               <th>Aksi</th>
             </tr>
@@ -156,12 +163,26 @@ function AddProject() {
                 <td>{p.id}</td>
                 <td>{p.name_project}</td>
                 <td>{truncate(p.deskripsi, 50)}</td>
-                <td><a href={p.link_web} target="_blank" rel="noreferrer">{p.link_web}</a></td>
+                <td>
+                  <a href={p.link_web} target="_blank" rel="noreferrer">
+                    {p.link_web}
+                  </a>
+                </td>
                 <td>{p.tools}</td>
                 <td>{p.nama_siswa}</td>
                 <td>
-                  <button className="btn btn-warning btn-sm me-2" onClick={() => handleEdit(p)}>Edit</button>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(p.id)}>Hapus</button>
+                  <button
+                    className="btn btn-warning btn-sm me-2"
+                    onClick={() => handleEdit(p)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDelete(p.id)}
+                  >
+                    Hapus
+                  </button>
                 </td>
               </tr>
             ))}
@@ -170,8 +191,14 @@ function AddProject() {
       </div>
 
       {showModal && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center" style={{ zIndex: 1055 }}>
-          <div className="bg-white rounded-3 p-4 shadow w-100" style={{ maxWidth: "600px" }}>
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center"
+          style={{ zIndex: 1055 }}
+        >
+          <div
+            className="bg-white rounded-3 p-4 shadow w-100"
+            style={{ maxWidth: "600px" }}
+          >
             <button
               className="btn position-absolute end-0 me-3 mt-3"
               onClick={() => {
@@ -237,7 +264,9 @@ function AddProject() {
                 ))}
               </select>
               <div className="mb-4">
-                <label className="form-label d-block">Upload Gambar Project</label>
+                <label className="form-label d-block">
+                  Upload Gambar Project
+                </label>
                 <input
                   type="file"
                   name="foto"
@@ -245,11 +274,11 @@ function AddProject() {
                   onChange={handleFileChange}
                 />
               </div>
-              <button type="submit" className="btn btn-primary me-2">Simpan</button>
+              <button type="submit" className="btn btn-primary me-2">
+                Simpan
+              </button>
               <button
-                onClick={() => {
-                  setShowModal(false);
-                }}
+                onClick={() => setShowModal(false)}
                 className="btn btn-link"
               >
                 Batal
