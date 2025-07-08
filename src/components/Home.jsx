@@ -226,7 +226,7 @@ function Home() {
               <span className="blinking-cursor">|</span>
             </h3>
 
-            <h1 className="display-4 fw-bold">BaTas</h1>
+            <h1 className="display-4 fw-bold">BATAS</h1>
 
             {/* Subheadline */}
             <p className="fst-italic text-light">
@@ -234,7 +234,7 @@ function Home() {
             </p>
 
             <p className="text-justify">
-              BaTas adalah platform untuk menampilkan portofolio siswa SMK.
+              BATAS adalah platform untuk menampilkan portofolio siswa SMK.
               Siswa dapat membagikan proyek mereka secara online dan masyarakat
               bisa mengakses informasi tersebut dengan mudah.
             </p>
@@ -246,22 +246,11 @@ function Home() {
               <span className="badge bg-light text-dark">Networking</span>
             </div>
 
-            {/* Divider */}
-            <div
-              style={{
-                width: "60px",
-                height: "5px",
-                backgroundColor: "#ffffff",
-                borderRadius: "10px",
-                marginTop: "1.5rem",
-                marginBottom: "1rem",
-              }}
-            ></div>
 
             {/* Tombol CTA */}
             <a
               href="cari-siswa"
-              className="btn text-black"
+              className="btn text-black mt-4"
               style={{ backgroundColor: "white" }}
             >
               Lihat Siswa
@@ -593,8 +582,8 @@ function Home() {
                 electronic typesetting, remaining essentially unchanged.
               </p>
               <ul>
-                <li>SISMAKO</li>
-                <p>Sistem Manajemen Sekolah</p>
+                <li>SISMAKO (Sistem Managament Sekolah)</li>
+
                 <li>Webite Sekolah</li>
 
                 <li>Sistem Absensi</li>

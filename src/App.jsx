@@ -57,47 +57,72 @@ export default function App() {
   };
 
   const handleLogin = async () => {
-  try {
-    const res = await axios.post("http://localhost:3006/api/login", {
-      nis,
-      password,
-    });
+    try {
+      const res = await axios.post("http://localhost:3006/api/login", {
+        nis,
+        password,
+      });
 
-    if (res.data.success) {
-      setShowModal(false);
+      if (res.data.success) {
+        setShowModal(false);
 
-      if (res.data.role === "admin") {
-        navigate("/admin");
-      } else if (res.data.role === "siswa") {
-        // Redirect ke halaman edit siswa berdasarkan ID
-        navigate(`/edit-siswa/${res.data.data.id}`);
+        if (res.data.role === "admin") {
+          navigate("/admin");
+        } else if (res.data.role === "siswa") {
+          // Redirect ke halaman edit siswa berdasarkan ID
+          navigate(`/edit-siswa/${res.data.data.id}`);
+        }
+      } else {
+        alert(res.data.message || "Login gagal");
       }
-    } else {
-      alert(res.data.message || "Login gagal");
+    } catch (err) {
+      console.error("Login gagal:", err.response?.data || err.message);
+      alert(err.response?.data?.message || "Terjadi kesalahan saat login");
     }
-  } catch (err) {
-    console.error("Login gagal:", err.response?.data || err.message);
-    alert(err.response?.data?.message || "Terjadi kesalahan saat login");
-  }
-};
-
-
+  };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+    <div
+      style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}
+    >
       {showLayout && (
         <>
-          <nav className="navbar navbar-expand-lg navbar-light bg-white py-4 border-bottom fixed-top">
+          <nav
+            className="navbar navbar-expand-lg fixed-top border-bottom py-3"
+            style={{
+              backgroundColor: "rgba(255, 255, 255, 0.9)", // transparansi
+              backdropFilter: "blur(5px)",
+              boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
+              zIndex: 999,
+            }}
+          >
             <div className="container d-flex justify-content-between align-items-center">
-              <span className=" fw-bold" style={{ color: "#12294A", fontSize: "30px", cursor: "pointer" }} onClick={() => navigate("/home")}>
-                BaTas
-              </span>
+              {/* Logo & Title */}
+              <div
+                className="d-flex flex-column align-items-start"
+                style={{ cursor: "pointer" }}
+                onClick={() => navigate("/home")}
+              >
+                <span
+                  className="fw-bold"
+                  style={{ color: "#12294A", fontSize: "28px" }}
+                >
+                  BATAS
+                </span>
+                <span className="text-muted" style={{ fontSize: "13px" }}>
+                  Bazma Talent Showcase
+                </span>
+              </div>
 
-              {/* Desktop Nav */}
+              {/* Desktop Navigation */}
               <div className="collapse navbar-collapse justify-content-end d-none d-lg-flex">
-                <div className="navbar-nav d-flex gap-4">
-                  <Link to="/home" className="nav-link text-dark fs">Home</Link>
-                  <Link to="/angkatan" className="nav-link text-dark fs">Student</Link>
+                <div className="navbar-nav d-flex gap-4 align-items-center">
+                  <Link to="/home" className="nav-link text-dark">
+                    Home
+                  </Link>
+                  <Link to="/angkatan" className="nav-link text-dark">
+                    Student
+                  </Link>
                   <button
                     className="btn"
                     style={{ backgroundColor: "#12294A", color: "white" }}
@@ -112,8 +137,8 @@ export default function App() {
               <div className="d-lg-none">
                 <button
                   className="btn btn-outline-primary"
-                  onClick={() => setShowMobileMenu(!showMobileMenu)}
                   style={{ borderRadius: "8px" }}
+                  onClick={() => setShowMobileMenu(!showMobileMenu)}
                 >
                   <i className="bi bi-three-dots-vertical fs-4"></i>
                 </button>
@@ -124,13 +149,41 @@ export default function App() {
             {showMobileMenu && (
               <div
                 className="position-absolute bg-white shadow rounded p-3 mt-2"
-                style={{ right: 10, top: 70, zIndex: 1000 }}
+                style={{
+                  right: 15,
+                  top: "100%",
+                  zIndex: 1050,
+                  backgroundColor: "rgba(255,255,255,0.95)",
+                  backdropFilter: "blur(6px)",
+                  width: "200px",
+                }}
               >
-                <Link to="/home" className="btn btn-primary d-block mb-2 text-white" onClick={() => setShowMobileMenu(false)}>Home</Link>
-                <Link to="/angkatan" className="btn btn-primary d-block mb-2 text-white" onClick={() => setShowMobileMenu(false)}>Student</Link>
-                <Link to="/team" className="btn btn-primary d-block mb-2 text-white" onClick={() => setShowMobileMenu(false)}>Team</Link>
-                <Link to="/form" className="btn btn-primary d-block mb-2 text-white" onClick={() => setShowMobileMenu(false)}>Tambah</Link>
-                <button className="btn btn-outline-primary w-100" onClick={() => { setShowModal(true); setShowMobileMenu(false); }}>Admin</button>
+                <Link
+                  to="/home"
+                  className="btn d-block mb-2"
+                  style={{ backgroundColor: "#12294A", color: "white" }}
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  Home
+                </Link>
+                <Link
+                  to="/angkatan"
+                  className="btn d-block mb-2"
+                  style={{ backgroundColor: "#12294A", color: "white" }}
+                  onClick={() => setShowMobileMenu(false)}
+                >
+                  Student
+                </Link>
+                <button
+                  className="btn btn-ouline-custom w-100"
+                  style={{ border: "1px solid #12294A", color: "black" }}
+                  onClick={() => {
+                    setShowModal(true);
+                    setShowMobileMenu(false);
+                  }}
+                >
+                  Login
+                </button>
               </div>
             )}
           </nav>
@@ -154,12 +207,37 @@ export default function App() {
             zIndex: 1050,
           }}
         >
-          <div className="modal-content p-4 rounded bg-white" style={{ width: "90%", maxWidth: "400px" }}>
+          <div
+            className="modal-content p-4 rounded bg-white"
+            style={{ width: "90%", maxWidth: "400px" }}
+          >
             <h2 className="mb-3">Login Admin</h2>
-            <input type="text" placeholder="NIS" className="form-control mb-3" value={nis} onChange={(e) => setNis(e.target.value)} />
-            <input type="password" placeholder="Password" className="form-control mb-3" value={password} onChange={(e) => setPassword(e.target.value)} />
-            <button className="btn btn-primary w-100 mb-2" onClick={handleLogin}>Login</button>
-            <button className="btn btn-secondary w-100" onClick={() => setShowModal(false)}>Batal</button>
+            <input
+              type="text"
+              placeholder="NIS"
+              className="form-control mb-3"
+              value={nis}
+              onChange={(e) => setNis(e.target.value)}
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              className="form-control mb-3"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+            <button
+              className="btn btn-primary w-100 mb-2"
+              onClick={handleLogin}
+            >
+              Login
+            </button>
+            <button
+              className="btn btn-secondary w-100"
+              onClick={() => setShowModal(false)}
+            >
+              Batal
+            </button>
           </div>
         </div>
       )}
@@ -176,7 +254,11 @@ export default function App() {
             <div className="row">
               <div className="col-12 col-md-2 mb-4">
                 <div className="d-flex align-items-center mb-3">
-                  <img src={bazmaLogo} alt="Logo" style={{ width: "80px", marginRight: "10px" }} />
+                  <img
+                    src={bazmaLogo}
+                    alt="Logo"
+                    style={{ width: "80px", marginRight: "10px" }}
+                  />
                   <h5 className="mb-0">SMK TI BAZMA</h5>
                 </div>
                 <p className="fw-bold">ENERGI MASA DEPAN INDONESIA</p>
@@ -196,7 +278,12 @@ export default function App() {
                 </div>
                 <div className="mb-3">
                   <h6 className="fw-bold">Hubungi Kami</h6>
-                  <a href="https://smktibazma.com" className="text-white text-decoration-underline">smktibazma.com</a>
+                  <a
+                    href="https://smktibazma.com"
+                    className="text-white text-decoration-underline"
+                  >
+                    smktibazma.com
+                  </a>
                 </div>
               </div>
             </div>
@@ -204,8 +291,12 @@ export default function App() {
             <div className="d-flex justify-content-between align-items-center flex-wrap">
               <p className="mb-0">EST 2025 From SMK TI BAZMA</p>
               <div>
-                <a href="#" className="text-white me-3 fs-5"><i className="bi bi-instagram"></i></a>
-                <a href="#" className="text-white fs-5"><i className="bi bi-youtube"></i></a>
+                <a href="#" className="text-white me-3 fs-5">
+                  <i className="bi bi-instagram"></i>
+                </a>
+                <a href="#" className="text-white fs-5">
+                  <i className="bi bi-youtube"></i>
+                </a>
               </div>
             </div>
           </div>
