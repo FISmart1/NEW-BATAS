@@ -90,7 +90,7 @@ export default function App() {
           <nav className="navbar navbar-expand-lg navbar-light bg-white py-4 border-bottom fixed-top">
             <div className="container d-flex justify-content-between align-items-center">
               <span className=" fw-bold" style={{ color: "#12294A", fontSize: "30px", cursor: "pointer" }} onClick={() => navigate("/home")}>
-                BazMatch
+                BaTas
               </span>
 
               {/* Desktop Nav */}

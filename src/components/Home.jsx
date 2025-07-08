@@ -20,6 +20,7 @@ import bareng from "../assets/bareng.png";
 import sekolah from "../assets/sekolah.png";
 import sas from "../assets/sas.png";
 import absensi from "../assets/absensi.png";
+import orang from "../assets/orang.png";
 
 function Home() {
   const navigate = useNavigate();
@@ -28,7 +29,7 @@ function Home() {
   const truncateText = (text, maxLength = 120) =>
     text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
   const greetings = [
-    "Welcome In",
+    "Welcome To",
     "Selamat Datang",
     "ようこそ",
     "환영합니다",
@@ -209,53 +210,79 @@ function Home() {
     <div className="flex-column flex-md-row">
       {/* Hero */}
       <motion.div
-        className="py-5"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeInUp}
-      >
-        <div className="row align-items-center container mx-auto my-5">
-          <div className="col-12 col-md-6 text-center text-md-start mb-4">
-            <h3
-              className="fw-semibold text-black"
-              style={{ minHeight: "2.5rem" }}
-            >
+      className="py-5 position-relative overflow-hidden"
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true }}
+      variants={fadeInUp}
+      style={{ backgroundColor: "#12294A" }}
+    >
+      <div className="container my-5">
+        <div className="row align-items-center p-3">
+          {/* TEKS */}
+          <div className="col-12 col-md-6 text-white mb-4 mb-md-0 text-center text-md-start">
+            <h3 className="fw-semibold" style={{ minHeight: "2.5rem" }}>
               {text}
               <span className="blinking-cursor">|</span>
             </h3>
 
-            <h1 className="display-4 fw-bold">BazMatch</h1>
+            <h1 className="display-4 fw-bold">BaTas</h1>
+
+            {/* Subheadline */}
+            <p className="fst-italic text-light">
+              Temukan talenta terbaik dari SMK TI Bazma dan lihat karya nyata mereka.
+            </p>
+
             <p className="text-justify">
-              Buka Porto adalah platform untuk menampilkan portofolio siswa SMK.
+              BaTas adalah platform untuk menampilkan portofolio siswa SMK.
               Siswa dapat membagikan proyek mereka secara online dan masyarakat
               bisa mengakses informasi tersebut dengan mudah.
             </p>
+
+            {/* Badge Keahlian */}
+            <div className="d-flex flex-wrap gap-2 mt-3">
+              <span className="badge bg-light text-dark">Web Developer</span>
+              <span className="badge bg-light text-dark">UI/UX Design</span>
+              <span className="badge bg-light text-dark">Networking</span>
+            </div>
+
+            {/* Divider */}
+            <div
+              style={{
+                width: "60px",
+                height: "5px",
+                backgroundColor: "#ffffff",
+                borderRadius: "10px",
+                marginTop: "1.5rem",
+                marginBottom: "1rem",
+              }}
+            ></div>
+
+            {/* Tombol CTA */}
             <a
               href="cari-siswa"
-              className="btn mt-3 text-white"
-              style={{ backgroundColor: "#12294A" }}
+              className="btn text-black"
+              style={{ backgroundColor: "white" }}
             >
               Lihat Siswa
             </a>
           </div>
-          <div className="col-12 col-md-6 mt-3">
-            <div className="row g-2 justify-content-center">
-              {[kong, sahrul, azan, firman, rehan, ibrahim, faray, mado].map(
-                (img, i) => (
-                  <div className="col-3 col-sm-3" key={i}>
-                    <img
-                      src={img}
-                      alt={`Person ${i + 1}`}
-                      className="img-fluid rounded"
-                    />
-                  </div>
-                )
-              )}
-            </div>
+
+          {/* GAMBAR */}
+          <div className="col-12 col-md-6 d-flex justify-content-center">
+            <motion.img
+              src={orang}
+              alt="Ilustrasi Siswa"
+              className="img-fluid"
+              style={{ maxHeight: "600px", objectFit: "contain" }}
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+            />
           </div>
         </div>
-      </motion.div>
+      </div>
+    </motion.div>
 
       {/* Tentang */}
       <motion.div
@@ -303,10 +330,7 @@ function Home() {
           Alumni yang telah bekerja di berbagai perusahaan ternama
         </p>
 
-        <div
-          className="d-flex align-items-center justify-content-center container"
-          style={{ borderBottom: "5px solid white" }}
-        >
+        <div className="d-flex align-items-center justify-content-center container">
           {/* Tombol kiri */}
           {/* Tombol kiri */}
           <button
@@ -367,7 +391,7 @@ function Home() {
                       <h3 className="fw-bold">
                         {nonPelajar[currentIndex].name}
                       </h3>
-                      <p>
+                      <p className="ml-3">
                         {truncateText(
                           nonPelajar[currentIndex].deskripsi ||
                             "Tidak ada deskripsi",
@@ -557,7 +581,7 @@ function Home() {
         variants={fadeInUp}
       >
         <div className="container text-white">
-          <div className="row align-items-center text-justify">
+          <div className="row align-items-center text-justify gap-">
             <div className="col-md-5">
               <h1 className="jua-regular">Project Siswa</h1>
               <p>
@@ -576,14 +600,14 @@ function Home() {
                 <li>Sistem Absensi</li>
               </ul>
             </div>
-            <div className="col-md-7">
+            <div className="col-md-7 ml-5">
               <div className="d-flex flex-wrap justify-content-center gap-3">
                 {/* Project 1 */}
                 <motion.div
                   className="card border-0 rounded p-0"
                   style={{
-                    width: "350px",
-                    height: "280px",
+                    width: "300px",
+                    height: "250px",
                     overflow: "hidden",
                     animation: "glowChange 4s infinite",
                   }}
@@ -606,8 +630,8 @@ function Home() {
                 <motion.div
                   className="card border-0 rounded p-0"
                   style={{
-                    width: "350px",
-                    height: "280px",
+                    width: "300px",
+                    height: "250px",
                     overflow: "hidden",
                     animation: "glowChange 4s infinite",
                   }}
@@ -618,8 +642,8 @@ function Home() {
                 >
                   <img
                     src={sas}
-                    className="w-100"
-                    style={{ height: "360px", objectFit: "cover" }}
+                    className=""
+                    style={{ height: "360px", objectFit: "cover", width: "100%" }}
                   />
                   <div className="p-3 bg-white">
                     <h5 className="text-dark">Sismako</h5>
@@ -630,7 +654,7 @@ function Home() {
                 <motion.div
                   className="card border-0 rounded p-0 mt-4"
                   style={{
-                    width: "700px",
+                    width: "600px",
                     height: "280px",
                     overflow: "hidden",
                     animation: "glowChange 4s infinite",
