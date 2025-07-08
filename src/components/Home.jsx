@@ -210,68 +210,68 @@ function Home() {
     <div className="flex-column flex-md-row">
       {/* Hero */}
       <motion.div
-      className="py-5 position-relative overflow-hidden"
-      initial="hidden"
-      whileInView="visible"
-      viewport={{ once: true }}
-      variants={fadeInUp}
-      style={{ backgroundColor: "#12294A" }}
-    >
-      <div className="container my-5">
-        <div className="row align-items-center p-3">
-          {/* TEKS */}
-          <div className="col-12 col-md-6 text-white mb-4 mb-md-0 text-center text-md-start">
-            <h3 className="fw-semibold" style={{ minHeight: "2.5rem" }}>
-              {text}
-              <span className="blinking-cursor">|</span>
-            </h3>
+        className="py-5 position-relative overflow-hidden"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+        style={{ backgroundColor: "#12294A" }}
+      >
+        <div className="container my-5">
+          <div className="row align-items-center p-3">
+            {/* TEKS */}
+            <div className="col-12 col-md-6 text-white mb-4 mb-md-0 text-center text-md-start">
+              <h3 className="fw-semibold" style={{ minHeight: "2.5rem" }}>
+                {text}
+                <span className="blinking-cursor">|</span>
+              </h3>
 
-            <h1 className="display-4 fw-bold">BATAS</h1>
+              <h1 className="display-4 fw-bold">BATAS</h1>
 
-            {/* Subheadline */}
-            <p className="fst-italic text-light">
-              Temukan talenta terbaik dari SMK TI Bazma dan lihat karya nyata mereka.
-            </p>
+              {/* Subheadline */}
+              <p className="fst-italic text-light">
+                Temukan talenta terbaik dari SMK TI Bazma dan lihat karya nyata
+                mereka.
+              </p>
 
-            <p className="text-justify">
-              BATAS adalah platform untuk menampilkan portofolio siswa SMK.
-              Siswa dapat membagikan proyek mereka secara online dan masyarakat
-              bisa mengakses informasi tersebut dengan mudah.
-            </p>
+              <p className="text-justify">
+                BATAS adalah platform untuk menampilkan portofolio siswa SMK.
+                Siswa dapat membagikan proyek mereka secara online dan
+                masyarakat bisa mengakses informasi tersebut dengan mudah.
+              </p>
 
-            {/* Badge Keahlian */}
-            <div className="d-flex flex-wrap gap-2 mt-3">
-              <span className="badge bg-light text-dark">Web Developer</span>
-              <span className="badge bg-light text-dark">UI/UX Design</span>
-              <span className="badge bg-light text-dark">Networking</span>
+              {/* Badge Keahlian */}
+              <div className="d-flex flex-wrap gap-2 mt-3">
+                <span className="badge bg-light text-dark">Web Developer</span>
+                <span className="badge bg-light text-dark">UI/UX Design</span>
+                <span className="badge bg-light text-dark">Networking</span>
+              </div>
+
+              {/* Tombol CTA */}
+              <a
+                href="cari-siswa"
+                className="btn text-black mt-4"
+                style={{ backgroundColor: "white" }}
+              >
+                Lihat Siswa
+              </a>
             </div>
 
-
-            {/* Tombol CTA */}
-            <a
-              href="cari-siswa"
-              className="btn text-black mt-4"
-              style={{ backgroundColor: "white" }}
-            >
-              Lihat Siswa
-            </a>
-          </div>
-
-          {/* GAMBAR */}
-          <div className="col-12 col-md-6 d-flex justify-content-center">
-            <motion.img
-              src={orang}
-              alt="Ilustrasi Siswa"
-              className="img-fluid"
-              style={{ maxHeight: "600px", objectFit: "contain" }}
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            />
+            {/* GAMBAR */}
+            <div className="col-12 col-md-6 d-flex justify-content-center">
+              <motion.img
+                src={orang}
+                alt="Ilustrasi Siswa"
+                className="img-fluid"
+                style={{ maxHeight: "600px", objectFit: "contain" }}
+                initial={{ opacity: 0, y: 30 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.8 }}
+              />
+            </div>
           </div>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
 
       {/* Tentang */}
       <motion.div
@@ -291,7 +291,7 @@ function Home() {
             />
           </div>
           <div className="col-12 col-md-6 text-justify d-flex flex-column justify-content-center align-items-start  ">
-            <h1 className="mb-4">SMK TI Bazma</h1>
+            <h1 className="mb-4">SMK TI BAZMA</h1>
             <p>
               SMK TI BAZMA menyelenggarakan program pembelajaran yang ditempuh
               selama 4 tahun dengan siswa-siswa terbaik yang berasal dari
@@ -376,7 +376,7 @@ function Home() {
                       />
                     </div>
                     {/* Informasi */}
-                    <div className="col-md-6 text-white text-justify text-md-start px-3 px-md-5">
+                    <div className="col-md-6 text-white text-justify text-md-start px-3 px-md-5 py-3 align-self-start">
                       <h3 className="fw-bold">
                         {nonPelajar[currentIndex].name}
                       </h3>
@@ -574,12 +574,10 @@ function Home() {
             <div className="col-md-5">
               <h1 className="jua-regular">Project Siswa</h1>
               <p>
-                Lorem Ipsum is simply dummy text of the printing and typesetting
-                industry. Lorem Ipsum has been the industry's standard dummy
-                text ever since the 1500s, when an unknown printer took a galley
-                of type and scrambled it to make a type specimen book. It has
-                survived not only five centuries, but also the leap into
-                electronic typesetting, remaining essentially unchanged.
+                Di balik setiap proyek, ada semangat belajar, kerja keras, dan
+                inovasi. Proyek-proyek ini adalah bukti bahwa siswa SMK TIBAZMA
+                mampu menciptakan teknologi yang bermanfaat dan siap bersaing di
+                dunia industri maupun masyarakat.
               </p>
               <ul>
                 <li>SISMAKO (Sistem Managament Sekolah)</li>
@@ -632,7 +630,11 @@ function Home() {
                   <img
                     src={sas}
                     className=""
-                    style={{ height: "360px", objectFit: "cover", width: "100%" }}
+                    style={{
+                      height: "360px",
+                      objectFit: "cover",
+                      width: "100%",
+                    }}
                   />
                   <div className="p-3 bg-white">
                     <h5 className="text-dark">Sismako</h5>
