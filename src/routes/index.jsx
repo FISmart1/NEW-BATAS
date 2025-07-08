@@ -11,7 +11,6 @@ import SiswaDetail from "../components/SiswaDetail";
 
 import Admin from "../components/admin/AdminDashboard"
 import AddSiswa from "../components/admin/AddSiswa";
-import AddKeahlian from "../components/admin/AddKeahlian";
 import AddPengalaman from "../components/admin/AddPengalaman";
 import AddProject from "../components/admin/AddProject";
 import Loading from "../components/loading";
@@ -47,7 +46,6 @@ export default function AppRoutes() {
 
             <Route path="/admin" element={<Admin />} />
             <Route path="/admin/add-siswa" element={<AddSiswa />} />
-            <Route path="/admin/add-keahlian" element={<AddKeahlian />} />
             <Route path="/admin/add-pengalaman" element={<AddPengalaman />} />
 
             <Route path="/admin/add-project" element={<AddProject />} />
