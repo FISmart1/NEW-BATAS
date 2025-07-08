@@ -1,8 +1,6 @@
-// pages/AddPengalaman.jsx
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { v4 as uuidv4 } from "uuid";
 
 function AddPengalaman() {
   const navigate = useNavigate();
@@ -19,14 +17,15 @@ function AddPengalaman() {
   const [showModal, setShowModal] = useState(false);
   const [siswaList, setSiswaList] = useState([]);
 
-  const fetchSiswa = async () => {
-    const res = await axios.get("http://localhost:3006/api/getsiswa");
-    setSiswaList(res.data || []);
-  };
   useEffect(() => {
     fetchData();
     fetchSiswa();
   }, []);
+
+  const fetchSiswa = async () => {
+    const res = await axios.get("http://localhost:3006/api/getsiswa");
+    setSiswaList(res.data || []);
+  };
 
   const fetchData = async () => {
     const res = await axios.get("http://localhost:3006/api/pengalaman");
@@ -52,8 +51,8 @@ function AddPengalaman() {
         );
         alert("Pengalaman diperbarui");
       } else {
-        const id = uuidv4();
-        data.set("id", id); // override ID
+        const id = crypto.randomUUID(); // native UUID
+        data.set("id", id);
         await axios.post("http://localhost:3006/api/pengalaman", data);
         alert("Pengalaman ditambahkan");
       }
@@ -134,39 +133,38 @@ function AddPengalaman() {
             <th>Nama</th>
             <th>Lokasi</th>
             <th>Deskripsi</th>
-            <th>ID Siswa</th>
+            <th>Nama Siswa</th>
             <th>Aksi</th>
           </tr>
         </thead>
         <tbody>
-  {list
-    .slice() // membuat salinan agar tidak mengubah state asli
-    .sort((a, b) => a.siswa_name.localeCompare(b.siswa_name)) // urutkan berdasarkan nama siswa (A-Z)
-    .map((item) => (
-      <tr key={item.id}>
-        <td>{item.id}</td>
-        <td>{item.name}</td>
-        <td>{item.lokasi}</td>
-        <td>{item.deskripsi}</td>
-        <td>{item.siswa_name}</td>
-        <td>
-          <button
-            className="btn btn-warning btn-sm me-2"
-            onClick={() => handleEdit(item)}
-          >
-            Edit
-          </button>
-          <button
-            className="btn btn-danger btn-sm"
-            onClick={() => handleDelete(item.id)}
-          >
-            Hapus
-          </button>
-        </td>
-      </tr>
-    ))}
-</tbody>
-
+          {list
+            .slice()
+            .sort((a, b) => a.siswa_name.localeCompare(b.siswa_name))
+            .map((item) => (
+              <tr key={item.id}>
+                <td>{item.id}</td>
+                <td>{item.name}</td>
+                <td>{item.lokasi}</td>
+                <td>{item.deskripsi}</td>
+                <td>{item.siswa_name}</td>
+                <td>
+                  <button
+                    className="btn btn-warning btn-sm me-2"
+                    onClick={() => handleEdit(item)}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="btn btn-danger btn-sm"
+                    onClick={() => handleDelete(item.id)}
+                  >
+                    Hapus
+                  </button>
+                </td>
+              </tr>
+            ))}
+        </tbody>
       </table>
 
       {/* Modal */}
@@ -222,7 +220,6 @@ function AddPengalaman() {
                   </option>
                 ))}
               </select>
-
               <input
                 type="file"
                 name="foto"
