@@ -241,204 +241,201 @@ function AddSiswa() {
 
       {/* Modal Bootstrap 5 manual (tanpa JS plugin) */}
       {showModal && (
-        <div
-          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center"
-          style={{ zIndex: 1055 }}
-        >
-          <div
-            className="bg-white rounded-3 p-4 shadow w-100"
-            style={{ maxWidth: "600px" }}
-          >
-            <button
-              className="btn-close position-absolute end-0 me-3 mt-3"
-              aria-label="Close"
-              onClick={() => setShowModal(false)}
-            ></button>
+  <div
+    className="position-fixed top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center"
+    style={{ zIndex: 9999, backgroundColor: "rgba(0,0,0,0.6)", overflowY: "auto" }}
+  >
+    <div
+      className="bg-white rounded-3 shadow w-100 px-3 py-4 position-relative"
+      style={{
+        maxWidth: "700px",
+        marginTop: "2rem",
+        marginBottom: "2rem",
+        maxHeight: "95vh",
+        overflowY: "auto",
+      }}
+    >
+      <button
+        className="btn-close position-absolute end-0 me-3 mt-3"
+        aria-label="Close"
+        onClick={() => setShowModal(false)}
+      ></button>
 
-            <h5 className="fw-semibold mb-3">
-              {isEdit ? "Edit Siswa" : "Tambah Siswa"}
-            </h5>
+      <h5 className="fw-semibold mb-4 mt-2 ps-2">
+        {isEdit ? "Edit Siswa" : "Tambah Siswa"}
+      </h5>
 
-            <form onSubmit={handleSubmit}>
-              <div className="row">
-                <div className="col-md-6">
-                  <input
-                    name="id"
-                    value={formData.id}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="NIS"
-                  />
-                  <input
-                    name="name"
-                    value={formData.name}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Nama"
-                    required
-                  />
-                  <input
-                    name="angkatan"
-                    value={formData.angkatan}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Angkatan"
-                  />
-                  <select
-                    name="keahlian"
-                    value={formData.keahlian || ""}
-                    onChange={handleChange}
-                    className="form-select mb-2"
-                  >
-                    <option value="">Pilih Keahlian</option>
-                    <option value="Web Developer">Web Developer</option>
-                    <option value="Back-End Developer">
-                      Back-End Developer
-                    </option>
-                    <option value="Fullstack Developer">
-                      Fullstack Developer
-                    </option>
-                    <option value="Mobile App Developer">
-                      Mobile App Developer
-                    </option>
-                    <option value="UI/UX Designer">UI/UX Designer</option>
-                    <option value="Data Analyst">Data Analyst</option>
-                    <option value="Data Scientist">Data Scientist</option>
-                    <option value="Machine Learning Engineer">
-                      Machine Learning Engineer
-                    </option>
-                    <option value="Network Engineer">Network Engineer</option>
-                    <option value="IT Support">IT Support</option>
-                    <option value="IT Support Assistant">
-                      IT Support Assistant
-                    </option>
-                  </select>
-                  <input
-                    name="skill"
-                    value={formData.skill}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Skill (pisahkan dengan koma)"
-                  />
-                  <input
-                    name="linkedin"
-                    value={formData.linkedin}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Link LinkedIn"
-                  />
-                  <input
-                    name="link_porto"
-                    value={formData.link_porto}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Link Portofolio"
-                  />
-                </div>
+      <form onSubmit={handleSubmit}>
+        <div className="row">
+          <div className="col-md-6">
+            <input
+              name="id"
+              value={formData.id}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="NIS"
+            />
+            <input
+              name="name"
+              value={formData.name}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Nama"
+              required
+            />
+            <input
+              name="angkatan"
+              value={formData.angkatan}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Angkatan"
+            />
+            <select
+              name="keahlian"
+              value={formData.keahlian || ""}
+              onChange={handleChange}
+              className="form-select mb-2"
+            >
+              <option value="">Pilih Keahlian</option>
+              <option value="Web Developer">Web Developer</option>
+              <option value="Back-End Developer">Back-End Developer</option>
+              <option value="Fullstack Developer">Fullstack Developer</option>
+              <option value="Mobile App Developer">Mobile App Developer</option>
+              <option value="UI/UX Designer">UI/UX Designer</option>
+              <option value="Data Analyst">Data Analyst</option>
+              <option value="Data Scientist">Data Scientist</option>
+              <option value="Machine Learning Engineer">Machine Learning Engineer</option>
+              <option value="Network Engineer">Network Engineer</option>
+              <option value="IT Support">IT Support</option>
+              <option value="IT Support Assistant">IT Support Assistant</option>
+            </select>
+            <input
+              name="skill"
+              value={formData.skill}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Skill (pisahkan dengan koma)"
+            />
+            <input
+              name="linkedin"
+              value={formData.linkedin}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Link LinkedIn"
+            />
+            <input
+              name="link_porto"
+              value={formData.link_porto}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Link Portofolio"
+            />
+          </div>
 
-                <div className="col-md-6">
-                  <input
-                    name="alamat"
-                    value={formData.alamat}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Alamat"
-                  />
-                  <textarea
-                    name="deskripsi"
-                    value={formData.deskripsi}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Deskripsi"
-                    rows={3}
-                  ></textarea>
-                  <input
-                    name="posisi"
-                    value={formData.posisi}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Posisi"
-                  />
-                  <input
-                    name="instansi"
-                    value={formData.instansi}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Instansi"
-                  />
-                  <input
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="Email"
-                  />
-                  <input
-                    name="telepon"
-                    value={formData.telepon}
-                    onChange={handleChange}
-                    className="form-control mb-3"
-                    placeholder="No. Telepon (628...)"
-                  />
-                  <select
-                    name="status"
-                    value={formData.status}
-                    onChange={handleChange}
-                    className="form-select mb-3"
-                  >
-                    <option value="">Pilih Status</option>
-                    <option value="siswa">Siswa</option>
-                    <option value="alumni">Alumni</option>
-                  </select>
-                </div>
-              </div>
-
-              <div className="row">
-                <div className="col-md-4 mb-3">
-                  <label className="form-label">Foto</label>
-                  <input
-                    type="file"
-                    name="foto"
-                    className="form-control"
-                    onChange={handleFileChange}
-                  />
-                </div>
-                <div className="col-md-4 mb-3">
-                  <label className="form-label">Foto Portofolio</label>
-                  <input
-                    type="file"
-                    name="portofolio_foto"
-                    className="form-control"
-                    onChange={handleFileChange}
-                  />
-                </div>
-                <div className="col-md-4 mb-3">
-                  <label className="form-label">CV (PDF/DOC)</label>
-                  <input
-                    type="file"
-                    name="cv"
-                    className="form-control"
-                    onChange={handleFileChange}
-                  />
-                </div>
-              </div>
-
-              <div className="d-flex justify-content-between">
-                <button type="submit" className="btn btn-primary">
-                  {isEdit ? "Update" : "Tambah"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShowModal(false)}
-                  className="btn btn-outline-secondary"
-                >
-                  Batal
-                </button>
-              </div>
-            </form>
+          <div className="col-md-6">
+            <input
+              name="alamat"
+              value={formData.alamat}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Alamat"
+            />
+            <textarea
+              name="deskripsi"
+              value={formData.deskripsi}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Deskripsi"
+              rows={3}
+            ></textarea>
+            <input
+              name="posisi"
+              value={formData.posisi}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Posisi"
+            />
+            <input
+              name="instansi"
+              value={formData.instansi}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Instansi"
+            />
+            <input
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="Email"
+            />
+            <input
+              name="telepon"
+              value={formData.telepon}
+              onChange={handleChange}
+              className="form-control mb-3"
+              placeholder="No. Telepon (628...)"
+            />
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="form-select mb-3"
+            >
+              <option value="">Pilih Status</option>
+              <option value="siswa">Siswa</option>
+              <option value="alumni">Alumni</option>
+            </select>
           </div>
         </div>
-      )}
+
+        <div className="row">
+          <div className="col-md-4 mb-3">
+            <label className="form-label">Foto</label>
+            <input
+              type="file"
+              name="foto"
+              className="form-control"
+              onChange={handleFileChange}
+            />
+          </div>
+          <div className="col-md-4 mb-3">
+            <label className="form-label">Foto Portofolio</label>
+            <input
+              type="file"
+              name="portofolio_foto"
+              className="form-control"
+              onChange={handleFileChange}
+            />
+          </div>
+          <div className="col-md-4 mb-3">
+            <label className="form-label">CV (PDF/DOC)</label>
+            <input
+              type="file"
+              name="cv"
+              className="form-control"
+              onChange={handleFileChange}
+            />
+          </div>
+        </div>
+
+        <div className="d-flex justify-content-between mt-3">
+          <button type="submit" className="btn btn-primary">
+            {isEdit ? "Update" : "Tambah"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setShowModal(false)}
+            className="btn btn-outline-secondary"
+          >
+            Batal
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
+
     </div>
   );
 }

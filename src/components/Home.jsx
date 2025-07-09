@@ -302,7 +302,7 @@ function Home() {
 
       >
         <h2 className="text-center fw-bold display-6 mb-3 text-black">
-          🌟 Siswa Berposisi Khusus
+          🌟 Alumni Berposisi Khusus
         </h2>
         <p className="text-center mb-4 text-black fs-5">
           Alumni yang telah bekerja di berbagai perusahaan ternama
@@ -551,68 +551,77 @@ function Home() {
         <div className="row">
           {filteredSiswa.length > 0 ? (
             filteredSiswa.map((s) => (
-              <div className="col-12 col-md-6 col-lg-4 mb-4" key={s.id}>
-                <div className="card h-100 shadow-sm border-0">
-                  <div className="card-body">
-                    <div className="d-flex align-items-center mb-3">
-                      <img
-                        src={`${imageBaseUrl}${s.foto}`}
-                        alt={s.name}
-                        className="rounded-circle me-3"
-                        style={{
-                          width: "70px",
-                          height: "70px",
-                          objectFit: "cover",
-                        }}
-                      />
-                      <div>
-                        <h5 className="mb-0">{s.name}</h5>
-                        <div className="d-flex flex-column">
-                          <small className="text-muted">
-                            Angkatan {s.angkatan}
-                          </small>
-                          <small className="text-muted">
-                            Alamat {s.alamat}
-                          </small>
-                        </div>
-                      </div>
-                    </div>
+              <div className="col-12 col-sm-6 col-lg-4 mb-4" key={s.id}>
+  <div className="card h-100 shadow-sm border-0">
+    <div className="card-body d-flex flex-column">
+      <div className="d-flex align-items-center mb-3" style={{ gap: "0.75rem" }}>
+        <img
+          src={`${imageBaseUrl}${s.foto}`}
+          alt={s.name}
+          className="rounded-circle"
+          style={{
+            width: "60px",
+            height: "60px",
+            objectFit: "cover",
+            flexShrink: 0,
+          }}
+        />
+        <div style={{ minWidth: 0 }}>
+          <h5
+            className="mb-0 text-truncate"
+            style={{ maxWidth: "100%" }}
+          >
+            {s.name}
+          </h5>
+          <div className="d-flex flex-column">
+            <small className="text-muted">Angkatan {s.angkatan}</small>
+            <small className="text-muted">Alamat {s.alamat}</small>
+          </div>
+        </div>
+      </div>
 
-                    <p
-                      className=" mb-3"
-                      style={{
-                        fontSize: "0.9rem",
-                        backgroundColor: "#12294A",
-                        color: "white",
-                        padding: "5px",
-                        borderRadius: "5px",
-                        width: "fit-content",
-                      }}
-                    >
-                      <strong>{s.keahlian}</strong>
-                    </p>
+      <p
+        className="mb-3"
+        style={{
+          fontSize: "0.9rem",
+          backgroundColor: "#12294A",
+          color: "white",
+          padding: "5px",
+          borderRadius: "5px",
+          width: "fit-content",
+          maxWidth: "100%",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+        }}
+        title={s.keahlian}
+      >
+        <strong>{s.keahlian}</strong>
+      </p>
 
-                    <p className="mb-1">
-                      <i className="bi bi-building me-1"></i>
-                      {s.instansi || "-"}, {s.posisi || "-"}
-                    </p>
-                    <p className="small mb-3">
-                      <i className="bi bi-lightning-fill me-1"></i>
-                      {s.skill || "-"}
-                    </p>
+      <p className="mb-1 text-truncate">
+        <i className="bi bi-building me-1"></i>
+        {s.instansi || "-"}, {s.posisi || "-"}
+      </p>
 
-                    <div className="mt-auto">
-                      <button
-                        className="btn w-100"
-                        style={{ backgroundColor: "#12294A", color: "white" }}
-                        onClick={() => navigate(`/siswa/${s.id}`)}
-                      >
-                        Lihat Profile
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      <p className="small mb-3 text-truncate">
+        <i className="bi bi-lightning-fill me-1"></i>
+        {s.skill || "-"}
+      </p>
+
+      <div className="mt-auto">
+        <button
+          className="btn w-100"
+          style={{ backgroundColor: "#12294A", color: "white" }}
+          onClick={() => navigate(`/siswa/${s.id}`)}
+        >
+          Lihat Profil
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
             ))
           ) : (
             <div className="text-center text-muted mt-4">
