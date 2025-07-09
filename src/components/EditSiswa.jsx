@@ -11,6 +11,19 @@ const EditSiswa = () => {
   const [modalType, setModalType] = useState("");
   const [formData, setFormData] = useState({});
   const [fotoFile, setFotoFile] = useState(null);
+  const [pengalamanForm, setPengalamanForm] = useState({
+    name: "",
+    lokasi: "",
+    deskripsi: "",
+    foto: null,
+  });
+  const [projectForm, setProjectForm] = useState({
+    name_project: "",
+    link_web: "",
+    deskripsi: "",
+    tools: "",
+    foto: null,
+  });
 
   useEffect(() => {
     axios
@@ -58,6 +71,86 @@ const EditSiswa = () => {
     } catch (err) {
       console.error(err);
       alert("Gagal memperbarui data");
+    }
+  };
+
+  const handlePengalamanChange = (e) => {
+    const { name, value } = e.target;
+    setPengalamanForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handlePengalamanFileChange = (e) => {
+    setPengalamanForm((prev) => ({ ...prev, foto: e.target.files[0] }));
+  };
+
+  const handleSubmitPengalaman = async (e) => {
+    e.preventDefault();
+    try {
+      const fd = new FormData();
+      fd.append("name", pengalamanForm.name);
+      fd.append("lokasi", pengalamanForm.lokasi);
+      fd.append("deskripsi", pengalamanForm.deskripsi);
+      fd.append("db_siswa_id", siswa.id);
+      if (pengalamanForm.foto) {
+        fd.append("foto", pengalamanForm.foto);
+      }
+
+      await axios.post("http://localhost:3006/api/pengalaman/", fd);
+      alert("Pengalaman berhasil ditambahkan");
+      setShowModal(false);
+      // Refresh pengalaman
+      const res = await axios.get(`http://localhost:3006/api/siswa/${id}`);
+      setPengalaman(res.data.pengalaman);
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menambahkan pengalaman");
+    }
+  };
+  const handleProjectChange = (e) => {
+    const { name, value } = e.target;
+    setProjectForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleProjectFileChange = (e) => {
+    const file = e.target.files[0];
+    console.log("Selected file:", file); // 👈 debug dulu
+    setProjectForm((prev) => ({ ...prev, foto: file }));
+  };
+
+  const handleSubmitProject = async (e) => {
+    e.preventDefault();
+    try {
+      const fd = new FormData();
+      const generatedId = Date.now().toString(); // karena di AddProject pakai Date.now()
+      fd.append("id", generatedId);
+      fd.append("name_project", projectForm.name_project);
+      fd.append("deskripsi", projectForm.deskripsi);
+      fd.append("link_web", projectForm.link_web);
+      fd.append("tools", projectForm.tools);
+      fd.append("db_siswa_id", siswa.id); // otomatis ambil dari data siswa yang sedang diedit
+      if (projectForm.foto) {
+        fd.append("foto", projectForm.foto);
+      }
+
+      await axios.post("http://localhost:3006/api/project/upload", fd);
+      alert("Project berhasil ditambahkan");
+      setShowModal(false);
+
+      // reset form + refresh project list
+      setProjectForm({
+        id: "",
+        name_project: "",
+        deskripsi: "",
+        link_web: "",
+        tools: "",
+        foto: null,
+      });
+
+      const res = await axios.get(`http://localhost:3006/api/siswa/${id}`);
+      setProjects(res.data.projects);
+    } catch (err) {
+      console.error("❌ Gagal upload project:", err);
+      alert("Gagal menambahkan project");
     }
   };
 
@@ -277,6 +370,160 @@ const EditSiswa = () => {
 
               <div className="d-flex justify-content-between">
                 <button type="submit" className="btn btn-primary">
+                  Simpan
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-outline-secondary"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showModal && modalType === "pengalaman" && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center"
+          style={{ zIndex: 1055 }}
+        >
+          <div
+            className="bg-white rounded-3 p-3 shadow w-100"
+            style={{ maxWidth: "480px" }}
+          >
+            <button
+              className="btn-close position-absolute end-0 me-3 mt-3"
+              aria-label="Close"
+              onClick={() => setShowModal(false)}
+            ></button>
+            <h5 className="fw-bold mb-3">Tambah Pengalaman</h5>
+            <form onSubmit={handleSubmitPengalaman}>
+              <input
+                type="text"
+                name="name"
+                value={pengalamanForm.name}
+                onChange={handlePengalamanChange}
+                className="form-control mb-2"
+                placeholder="Nama Pengalaman"
+                required
+              />
+              <input
+                type="text"
+                name="lokasi"
+                value={pengalamanForm.lokasi}
+                onChange={handlePengalamanChange}
+                className="form-control mb-2"
+                placeholder="Lokasi"
+                required
+              />
+              <textarea
+                name="deskripsi"
+                value={pengalamanForm.deskripsi}
+                onChange={handlePengalamanChange}
+                className="form-control mb-2"
+                placeholder="Deskripsi"
+                rows="3"
+                required
+              ></textarea>
+
+              <div className="mb-3">
+                <label className="form-label mb-1">Foto (opsional)</label>
+                <input
+                  type="file"
+                  name="foto"
+                  className="form-control"
+                  onChange={handlePengalamanFileChange}
+                />
+              </div>
+
+              <div className="d-flex justify-content-between">
+                <button type="submit" className="btn btn-primary">
+                  Simpan
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-outline-secondary"
+                >
+                  Batal
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {showModal && modalType === "project" && (
+        <div
+          className="position-fixed top-0 start-0 w-100 h-100 bg-dark bg-opacity-50 d-flex justify-content-center align-items-center"
+          style={{ zIndex: 1055 }}
+        >
+          <div
+            className="bg-white rounded-3 p-3 shadow w-100"
+            style={{ maxWidth: "480px" }}
+          >
+            <button
+              className="btn-close position-absolute end-0 me-3 mt-3"
+              aria-label="Close"
+              onClick={() => setShowModal(false)}
+            ></button>
+            <h5 className="fw-bold mb-3">Tambah Project</h5>
+            <form>
+              <input
+                type="text"
+                name="name_project"
+                value={projectForm.name_project}
+                onChange={handleProjectChange}
+                className="form-control mb-2"
+                placeholder="Nama Project"
+                required
+              />
+              <input
+                type="text"
+                name="link_web"
+                value={projectForm.link_web}
+                onChange={handleProjectChange}
+                className="form-control mb-2"
+                placeholder="Link Web (jika ada)"
+              />
+              <textarea
+                name="deskripsi"
+                value={projectForm.deskripsi}
+                onChange={handleProjectChange}
+                className="form-control mb-2"
+                placeholder="Deskripsi"
+                rows="3"
+                required
+              ></textarea>
+              <input
+                type="text"
+                name="tools"
+                value={projectForm.tools}
+                onChange={handleProjectChange}
+                className="form-control mb-2"
+                placeholder="Tools yang digunakan (pisahkan dengan koma)"
+                required
+              />
+
+              <div className="mb-3">
+                <label className="form-label mb-1">Foto (opsional)</label>
+                <input
+                  type="file"
+                  name="foto"
+                  className="form-control"
+                  onChange={handleProjectFileChange}
+                />
+              </div>
+
+              <div className="d-flex justify-content-between">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  onClick={handleSubmitProject}
+                >
                   Simpan
                 </button>
                 <button
