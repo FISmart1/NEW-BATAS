@@ -16,6 +16,9 @@ function AddSiswa() {
     instansi: "",
     skill: "",
     linkedin: "",
+    status: "", // ✅ TAMBAHKAN INI
+    email: "",
+    telepon: "",
   });
   const [files, setFiles] = useState({
     foto: null,
@@ -35,11 +38,15 @@ function AddSiswa() {
       keahlian: fd.keahlian,
       link_porto: fd.link_porto,
       alamat: fd.alamat,
+      deskripsi: fd.deskripsi,
       posisi: fd.posisi,
       instansi: fd.instansi,
-      deskripsi: fd.deskripsi,
+      email: fd.email,
+      telepon: fd.telepon,
+
       skill: fd.skill,
       linkedin: fd.linkedin,
+      status: fd.status, // ✅ TAMBAHKAN INI
     });
     setShowModal(true);
     setIsEdit(true); // TAMBAHKAN INI
@@ -82,7 +89,10 @@ function AddSiswa() {
 
     try {
       if (isEdit) {
-        await axios.put(`http://localhost:3006/api/siswa/update/${formData.id}`, fd);
+        await axios.put(
+          `http://localhost:3006/api/siswa/update/${formData.id}`,
+          fd
+        );
         alert("Data siswa berhasil diperbarui.");
       } else {
         await axios.post("http://localhost:3006/api/siswa", fd);
@@ -103,6 +113,9 @@ function AddSiswa() {
         instansi: "",
         skill: "",
         linkedin: "",
+        status: "",
+        email: "",
+        telepon: "",
       });
       setFiles({ foto: null, portofolio_foto: null, cv: null });
       setIsEdit(false); // RESET
@@ -110,7 +123,6 @@ function AddSiswa() {
       console.error(err);
       alert("Gagal menyimpan data siswa.");
       console.log("Error detail:", err.response?.data || err.message);
-
     }
   };
 
@@ -119,36 +131,38 @@ function AddSiswa() {
     <div className="container py-4 mt-5 mb-5">
       <h2 className="h4 fw-bold mb-4 mt-5">Data Siswa</h2>
       <div className="d-flex gap-4">
-      <button
-        onClick={() => navigate(-1)}
-        className="btn btn-primary text-decoration-none mb-4"
-      >
-        &larr; Back
-      </button>
-      <button
-        className="btn btn-success mb-4"
-        onClick={() => {
-          setShowModal(true);
-          setIsEdit(false);
-          setFormData({
-            id: "",
-            name: "",
-            angkatan: "",
-            keahlian: "",
-            link_porto: "",
-            alamat: "",
-            deskripsi: "",
-            posisi: "",
-            instansi: "",
-            skill: "",
-            linkedin: "",
-          });
-          setFiles({ foto: null, portofolio_foto: null, cv: null });
-        }}
-      >
-        Tambah Siswa Baru
-      </button>
-
+        <button
+          onClick={() => navigate(-1)}
+          className="btn btn-primary text-decoration-none mb-4"
+        >
+          &larr; Back
+        </button>
+        <button
+          className="btn btn-success mb-4"
+          onClick={() => {
+            setShowModal(true);
+            setIsEdit(false);
+            setFormData({
+              id: "",
+              name: "",
+              angkatan: "",
+              keahlian: "",
+              link_porto: "",
+              alamat: "",
+              deskripsi: "",
+              posisi: "",
+              instansi: "",
+              skill: "",
+              linkedin: "",
+              status: "",
+              email: "",
+              telepon: "",
+            });
+            setFiles({ foto: null, portofolio_foto: null, cv: null });
+          }}
+        >
+          Tambah Siswa Baru
+        </button>
       </div>
 
       <div className="table-responsive">
@@ -176,20 +190,32 @@ function AddSiswa() {
                 <td>{s.skill}</td>
                 <td>
                   {s.linkedin && (
-                    <a href={s.linkedin} target="_blank" className="btn btn-primary">
+                    <a
+                      href={s.linkedin}
+                      target="_blank"
+                      className="btn btn-primary"
+                    >
                       Lihat
                     </a>
                   )}
                 </td>
                 <td>
                   {s.link_porto && (
-                    <a href={s.link_porto} target="_blank" rel="noreferrer" className="btn btn-outline-primary">
+                    <a
+                      href={s.link_porto}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="btn btn-outline-primary"
+                    >
                       Lihat
                     </a>
                   )}
                 </td>
                 <td>
-                  <Link to={`/siswa/${s.id}`} className="text-decoration-none btn btn-primary">
+                  <Link
+                    to={`/siswa/${s.id}`}
+                    className="text-decoration-none btn btn-primary"
+                  >
                     Lihat Profil
                   </Link>
                 </td>
@@ -234,125 +260,181 @@ function AddSiswa() {
             </h5>
 
             <form onSubmit={handleSubmit}>
-              {/* kolom teks */}
-              <input
-                name="id"
-                value={formData.id}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="NIS "
-              />
-              <input
-                name="name"
-                value={formData.name}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Nama"
-                required
-              />
-              <input
-                name="angkatan"
-                value={formData.angkatan}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Angkatan"
-                required
-              />
-              <input
-                name="keahlian"
-                value={formData.keahlian}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Keahlian"
-              />
-              <input
-                name="skill"
-                value={formData.skill}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Skill (Pisahkan dengan koma jika lebih dari satu)"
-              />
-              <input
-                name="linkedin"
-                value={formData.linkedin}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Masukan link linkedin"
-              />
-              <input
-                name="link_porto"
-                value={formData.link_porto}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Link Portofolio"
-              />
-              <input
-                name="alamat"
-                value={formData.alamat}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Alamat"
-              />
-              <input
-                name="deskripsi"
-                value={formData.deskripsi}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Deskripsi"
-              />
-              <input
-                name="posisi"
-                value={formData.posisi}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Posisi"
-              />
-              <input
-                name="instansi"
-                value={formData.instansi}
-                onChange={handleChange}
-                className="form-control mb-3"
-                placeholder="Instansi"
-              />
+              <div className="row">
+                <div className="col-md-6">
+                  <input
+                    name="id"
+                    value={formData.id}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="NIS"
+                  />
+                  <input
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Nama"
+                    required
+                  />
+                  <input
+                    name="angkatan"
+                    value={formData.angkatan}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Angkatan"
+                  />
+                  <select
+                    name="keahlian"
+                    value={formData.keahlian || ""}
+                    onChange={handleChange}
+                    className="form-select mb-2"
+                  >
+                    <option value="">Pilih Keahlian</option>
+                    <option value="Web Developer">Web Developer</option>
+                    <option value="Back-End Developer">
+                      Back-End Developer
+                    </option>
+                    <option value="Fullstack Developer">
+                      Fullstack Developer
+                    </option>
+                    <option value="Mobile App Developer">
+                      Mobile App Developer
+                    </option>
+                    <option value="UI/UX Designer">UI/UX Designer</option>
+                    <option value="Data Analyst">Data Analyst</option>
+                    <option value="Data Scientist">Data Scientist</option>
+                    <option value="Machine Learning Engineer">
+                      Machine Learning Engineer
+                    </option>
+                    <option value="Network Engineer">Network Engineer</option>
+                    <option value="IT Support">IT Support</option>
+                    <option value="IT Support Assistant">
+                      IT Support Assistant
+                    </option>
+                  </select>
+                  <input
+                    name="skill"
+                    value={formData.skill}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Skill (pisahkan dengan koma)"
+                  />
+                  <input
+                    name="linkedin"
+                    value={formData.linkedin}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Link LinkedIn"
+                  />
+                  <input
+                    name="link_porto"
+                    value={formData.link_porto}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Link Portofolio"
+                  />
+                </div>
 
-              {/* file upload */}
-              <div className="mb-3">
-                <label className="form-label d-block">Foto</label>
-                <input
-                  type="file"
-                  name="foto"
-                  className="form-control"
-                  onChange={handleFileChange}
-                />
-              </div>
-              <div className="mb-3">
-                <label className="form-label d-block">Foto Portofolio</label>
-                <input
-                  type="file"
-                  name="portofolio_foto"
-                  className="form-control"
-                  onChange={handleFileChange}
-                />
-              </div>
-              <div className="mb-4">
-                <label className="form-label d-block">CV (PDF, doc, dsb)</label>
-                <input
-                  type="file"
-                  name="cv"
-                  className="form-control"
-                  onChange={handleFileChange}
-                />
+                <div className="col-md-6">
+                  <input
+                    name="alamat"
+                    value={formData.alamat}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Alamat"
+                  />
+                  <textarea
+                    name="deskripsi"
+                    value={formData.deskripsi}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Deskripsi"
+                    rows={3}
+                  ></textarea>
+                  <input
+                    name="posisi"
+                    value={formData.posisi}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Posisi"
+                  />
+                  <input
+                    name="instansi"
+                    value={formData.instansi}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Instansi"
+                  />
+                  <input
+                    name="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="Email"
+                  />
+                  <input
+                    name="telepon"
+                    value={formData.telepon}
+                    onChange={handleChange}
+                    className="form-control mb-3"
+                    placeholder="No. Telepon (628...)"
+                  />
+                  <select
+                    name="status"
+                    value={formData.status}
+                    onChange={handleChange}
+                    className="form-select mb-3"
+                  >
+                    <option value="">Pilih Status</option>
+                    <option value="siswa">Siswa</option>
+                    <option value="alumni">Alumni</option>
+                  </select>
+                </div>
               </div>
 
-              <button type="submit" className="btn btn-primary">
-                {isEdit ? "Update" : "Tambah"}
-              </button>
-              <button
-                onClick={() => setShowModal(false)}
-                className="btn btn-link text-decoration-none"
-              >
-                Back
-              </button>
+              <div className="row">
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">Foto</label>
+                  <input
+                    type="file"
+                    name="foto"
+                    className="form-control"
+                    onChange={handleFileChange}
+                  />
+                </div>
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">Foto Portofolio</label>
+                  <input
+                    type="file"
+                    name="portofolio_foto"
+                    className="form-control"
+                    onChange={handleFileChange}
+                  />
+                </div>
+                <div className="col-md-4 mb-3">
+                  <label className="form-label">CV (PDF/DOC)</label>
+                  <input
+                    type="file"
+                    name="cv"
+                    className="form-control"
+                    onChange={handleFileChange}
+                  />
+                </div>
+              </div>
+
+              <div className="d-flex justify-content-between">
+                <button type="submit" className="btn btn-primary">
+                  {isEdit ? "Update" : "Tambah"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  className="btn btn-outline-secondary"
+                >
+                  Batal
+                </button>
+              </div>
             </form>
           </div>
         </div>

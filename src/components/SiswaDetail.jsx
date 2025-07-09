@@ -95,42 +95,62 @@ function SiswaDetail() {
         id="profile-section"
         style={{ color: "#12294A" }}
       >
-        <div className="d-flex justify-content-between align-items-center mb-4">
-          <button
-            onClick={() => navigate(-1)}
-            className="btn"
-            style={{ backgroundColor: "white", color: "black" }}
-          >
-            <i className="bi bi-arrow-left"></i> Back
-          </button>
-          <div className="d-flex gap-2">
-            <button
-              onClick={downloadPDF}
-              className="btn"
-              style={{ backgroundColor: "#12294A", color: "white" }}
-            >
-              <i className="bi bi-file-earmark-pdf"></i> PDF
-            </button>
-            <button
-              onClick={downloadPNG}
-              className="btn"
-              style={{ backgroundColor: "#12294A", color: "white" }}
-            >
-              Portofolio <i className="bi bi-box-arrow-up-right"></i>
-            </button>
-          </div>
-        </div>
-
-        <div className="text-justify mb-4 border row p-5 rounded-3">
+        <div className="text-justify mb-4 border row p-3 rounded-3">
           <div className="col-6 container">
             <h3 className="mt-3 mb-1 fw-bold text-dark">{siswa.name}</h3>
-            <p className="text-dark">{siswa.posisi} - {siswa.instansi }</p>
+            <p className="text-dark">
+              {siswa.posisi} - {siswa.instansi}
+            </p>
+            <div className="d-flex gap-2">
+              <button
+                onClick={downloadPDF}
+                className="btn"
+                style={{ backgroundColor: "#12294A", color: "white" }}
+              >
+                <i className="bi bi-file-earmark-pdf"></i> PDF
+              </button>
+              <button
+                onClick={downloadPNG}
+                className="btn"
+                style={{ backgroundColor: "#12294A", color: "white" }}
+              >
+                Portofolio <i className="bi bi-box-arrow-up-right"></i>
+              </button>
+            </div>
+            <div className="d-flex flex-column gap-2 mt-3">
+              {siswa.email && (
+                <div className="d-flex align-items-center gap-2">
+                  <i className="bi bi-envelope-fill text-primary"></i>
+                  <a
+                    href={`https://mail.google.com/mail/?view=cm&fs=1&to=${siswa.email}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-decoration-none text-dark"
+                  >
+                    {siswa.email}
+                  </a>
+                </div>
+              )}
+              {siswa.telepon && (
+                <div className="d-flex align-items-center gap-2">
+                  <i className="bi bi-telephone-fill text-success"></i>
+                  <a
+                    href={`https://wa.me/${siswa.telepon}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="text-decoration-none text-dark"
+                  >
+                    {siswa.telepon}
+                  </a>
+                </div>
+              )}
+            </div>
           </div>
           <img
             src={`${baseImageUrl}${siswa.foto}`}
             alt="profil"
             className="rounded-circle col-6 container"
-            style={{ width: "170px", height: "150px", objectFit: "cover" }}
+            style={{ width: "220px", height: "200px", objectFit: "cover" }}
           />
         </div>
 
@@ -144,7 +164,11 @@ function SiswaDetail() {
           <div className="d-flex flex-wrap gap-2">
             {siswa.skill ? (
               siswa.skill.split(",").map((s, i) => (
-                <span key={i} className={`badge text-white p-3`} style={{backgroundColor: "#12294A"}}>
+                <span
+                  key={i}
+                  className={`badge text-white p-3`}
+                  style={{ backgroundColor: "#12294A" }}
+                >
                   {s.trim()}
                 </span>
               ))

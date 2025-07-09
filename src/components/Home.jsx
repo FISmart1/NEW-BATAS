@@ -81,20 +81,30 @@ function Home() {
   useEffect(() => {
     axios.get("http://localhost:3006/api/getsiswa").then((res) => {
       const data = res.data;
-      const nonPelajarData = data.filter((s) => s.posisi !== "Pelajar");
 
+      // 🔍 Filter hanya siswa yang status-nya 'alumni'
+      const alumniOnly = data.filter((s) => s.status === "alumni");
+
+      // 🔍 Filter siswa non-pelajar (untuk slider/tampilan khusus)
+      const nonPelajarData = alumniOnly.filter((s) => s.posisi !== "Pelajar");
       setNonPelajar(nonPelajarData);
-      setAllSiswa(data);
 
-      const keahlianSet = new Set(data.map((s) => s.keahlian).filter(Boolean));
-      setKeahlianList([...keahlianSet]);
-      const asalSet = new Set(data.map((s) => s.alamat).filter(Boolean));
-      setAsalList([...asalSet]);
-      const allSkills = data.flatMap((s) =>
+      // 🔍 Simpan semua alumni ke allSiswa (untuk keperluan filter selanjutnya)
+      setAllSiswa(alumniOnly);
+      setFilteredSiswa(alumniOnly); // tampilkan awal semua alumni
+
+      // 🔍 Buat daftar unik keahlian, asal, skill dari alumniOnly
+      const keahlianSet = new Set(
+        alumniOnly.map((s) => s.keahlian).filter(Boolean)
+      );
+      const asalSet = new Set(alumniOnly.map((s) => s.alamat).filter(Boolean));
+      const allSkills = alumniOnly.flatMap((s) =>
         s.skill ? s.skill.split(",").map((sk) => sk.trim()) : []
       );
+
+      setKeahlianList([...keahlianSet]);
+      setAsalList([...asalSet]);
       setSkillList([...new Set(allSkills)]);
-      setFilteredSiswa(data);
     });
 
     axios
@@ -103,22 +113,31 @@ function Home() {
   }, []);
 
   useEffect(() => {
-    let result = [...allSiswa];
-    result = result.filter((s) =>
-      s.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    if (selectedKeahlian !== "") {
-      result = result.filter((s) => s.keahlian === selectedKeahlian);
-    }
-    if (selectedAsal !== "") {
-      result = result.filter((s) => s.alamat === selectedAsal);
-    }
-    if (selectedSkill !== "") {
-      result = result.filter((s) =>
-        s.skill?.toLowerCase().includes(selectedSkill.toLowerCase())
-      );
-    }
-    setFilteredSiswa(result);
+    const filtered = allSiswa.filter((s) => {
+      const searchLower = searchTerm.toLowerCase();
+
+      const matchSearch =
+        s.name.toLowerCase().includes(searchLower) ||
+        (s.keahlian && s.keahlian.toLowerCase().includes(searchLower)) ||
+        (s.skill && s.skill.toLowerCase().includes(searchLower));
+
+      const matchKeahlian =
+        selectedKeahlian === "" || s.keahlian === selectedKeahlian;
+
+      const matchAsal = selectedAsal === "" || s.alamat === selectedAsal;
+
+      const matchSkill =
+        selectedSkill === "" ||
+        (s.skill &&
+          s.skill
+            .split(",")
+            .map((sk) => sk.trim().toLowerCase())
+            .includes(selectedSkill.toLowerCase()));
+
+      return matchSearch && matchKeahlian && matchAsal && matchSkill;
+    });
+
+    setFilteredSiswa(filtered);
   }, [searchTerm, selectedKeahlian, selectedSkill, selectedAsal, allSiswa]);
 
   useEffect(() => {
@@ -226,7 +245,7 @@ function Home() {
                 <span className="blinking-cursor">|</span>
               </h3>
 
-              <h1 className="display-4 fw-bold">BATAS</h1>
+              <h1 className="display-4 fw-bold">BEST</h1>
 
               {/* Subheadline */}
               <p className="fst-italic text-light">
@@ -235,7 +254,7 @@ function Home() {
               </p>
 
               <p className="text-justify">
-                BATAS adalah platform untuk menampilkan portofolio siswa SMK.
+                BEST adalah platform untuk menampilkan portofolio siswa SMK.
                 Siswa dapat membagikan proyek mereka secara online dan
                 masyarakat bisa mengakses informasi tersebut dengan mudah.
               </p>
@@ -272,50 +291,20 @@ function Home() {
           </div>
         </div>
       </motion.div>
-
       {/* Tentang */}
-      <motion.div
-        className="container-fluid py-5"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={fadeInUp}
-      >
-        <div className="row container mx-auto w-75 p-3 gap-5">
-          <div className="col-12 col-md-5 mb-4 text-center  align-items-center ">
-            <img
-              src={bareng}
-              alt="Buka Porto"
-              className="img-fluid rounded-4"
-              style={{ width: "100%", height: "300px", objectFit: "cover" }}
-            />
-          </div>
-          <div className="col-12 col-md-6 text-justify d-flex flex-column justify-content-center align-items-start  ">
-            <h1 className="mb-4">SMK TI BAZMA</h1>
-            <p>
-              SMK TI BAZMA menyelenggarakan program pembelajaran yang ditempuh
-              selama 4 tahun dengan siswa-siswa terbaik yang berasal dari
-              berbagai daerah di seluruh Indonesia. SMK TI Bazma
-              menyelenggarakan pendidikan dengan jurusan SIJA (Sistem
-              Informatika, Jaringan & Aplikasi) dengan kombinasi kurikulum
-              berbasis asrama.
-            </p>
-          </div>
-        </div>
-      </motion.div>
       {/* Non Pelajar */}
       <motion.div
-        className="container-fluid mb-5 p-4"
+        className="container-fluid p-4  mt-5"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
-        style={{ backgroundColor: "#12294A" }}
+
       >
-        <h2 className="text-center fw-bold display-6 mb-3 text-white">
+        <h2 className="text-center fw-bold display-6 mb-3 text-black">
           🌟 Siswa Berposisi Khusus
         </h2>
-        <p className="text-center mb-4 text-white fs-5">
+        <p className="text-center mb-4 text-black fs-5">
           Alumni yang telah bekerja di berbagai perusahaan ternama
         </p>
 
@@ -371,12 +360,12 @@ function Home() {
                           height: "320px",
                           objectFit: "cover",
                           width: "100%",
-                          animation: "rainbowShadow 5s infinite ease-in-out",
+                          boxShadow: "0 0 12px 0px #12294A",
                         }}
                       />
                     </div>
                     {/* Informasi */}
-                    <div className="col-md-6 text-white text-justify text-md-start px-3 px-md-5 py-3 align-self-start">
+                    <div className="col-md-6 text-black text-justify text-md-start px-3 px-md-5 py-3 align-self-start">
                       <h3 className="fw-bold">
                         {nonPelajar[currentIndex].name}
                       </h3>
@@ -394,7 +383,8 @@ function Home() {
                       </p>
                       <Link
                         to={`/siswa/${nonPelajar[currentIndex].id}`}
-                        className="btn-custom mt-3 d-inline-block"
+                        className="btn mt-3 d-inline-block"
+                        style={{ color: "white", backgroundColor: "#12294A" }}
                       >
                         Lihat Detail!
                       </Link>
@@ -420,7 +410,64 @@ function Home() {
           </button>
         </div>
       </motion.div>
+      {/* Cari semua siswa */}
+      ...
+      <motion.div
+        id="cari-siswa"
+        className="container-fluid"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+         style={{ backgroundColor: "#12294A" }}
+      >
+        <div className="container p-5">
+          <div className="row text-center justify-content-center align-items-center">
+            <div className="col-12 col-md-4">
+              <div className="d-flex flex-column align-items-center">
+                <div
+                  className="bg-white bg-opacity-25 rounded-circle mb-3 d-flex align-items-center justify-content-center"
+                  style={{ width: "60px", height: "60px" }}
+                >
+                  <i className="bi bi-people-fill fs-3 text-white"></i>
+                </div>
+                <h5 className="fw-bold mb-1 text-white">{filteredSiswa.length}+ Alumni</h5>
+                <p className="text-white small">
+                  Talenta dari berbagai keahlian
+                </p>
+              </div>
+            </div>
 
+            <div className="col-12 col-md-4">
+              <div className="d-flex flex-column align-items-center">
+                <div
+                  className="bg-white bg-opacity-25 rounded-circle mb-3 d-flex align-items-center justify-content-center"
+                  style={{ width: "60px", height: "60px" }}
+                >
+                  <i className="bi bi-award-fill fs-3 text-white"></i>
+                </div>
+                <h5 className="fw-bold mb-1 text-white">{skillList.length}+ Skill</h5>
+                <p className="text-white small">
+                  Skill yang dibutuhkan didunia kerja
+                </p>
+              </div>
+            </div>
+
+            <div className="col-12 col-md-4">
+              <div className="d-flex flex-column align-items-center">
+                <div
+                  className="bg-white bg-opacity-25 rounded-circle mb-3 d-flex align-items-center justify-content-center"
+                  style={{ width: "60px", height: "60px" }}
+                >
+                  <i className="bi bi-briefcase-fill fs-3 text-white"></i>
+                </div>
+                <h5 className="fw-bold mb-1 text-white">{AsalList.length}+ Asal daerah</h5>
+                <p className="text-white small">Asal daerah talenta kita</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </motion.div>
       {/* Cari semua siswa */}
       <motion.div
         id="cari-siswa"
@@ -430,136 +477,152 @@ function Home() {
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <div className="text-center my-5">
-          <h2 style={{ color: "#12294A" }}>Cari Siswa</h2>
-          <p className="text-muted">
-            Telusuri dan temukan siswa terbaik berdasarkan daerah asal,
-            keahlian, atau skill mereka.
+        <div className="container-fluid my-5">
+          <h2 style={{ color: "#12294A", textAlign: "center" }}>
+            Temukan Talenta Terbaik
+          </h2>
+          <p className="text-muted text-center">
+            Jelajahi profil siswa berbakat dari SMK TI Bazma dan temukan
+            kolaborator terbaik untuk proyek Anda.
           </p>
         </div>
-        <div className="text-center mb-3">
-          <button
-            className="btn-custom-nooutline fw-semibold"
-            onClick={() => setShowFilter((prev) => !prev)}
-          >
-            {showFilter ? "Sembunyikan Filter" : "Tampilkan Filter"}
-          </button>
-        </div>
 
-        {showFilter && (
-          <div className="mb-3 d-flex flex-column flex-md-row align-items-center gap-3 justify-content-center">
+        {/* Filter Siswa */}
+        {/* Filter Siswa */}
+        <div className="container mb-5">
+          <div className="bg-white shadow-sm rounded-4 px-3 px-md-5 py-4 mb-4 d-flex flex-column flex-lg-row align-items-stretch justify-content-between gap-3">
+            {/* Input Pencarian Nama/Keahlian */}
+            <input
+              type="text"
+              className="form-control rounded-3 px-4"
+              style={{ flex: 1, minWidth: "340px" }}
+              placeholder="🔍 Cari nama atau keahlian..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+
+            {/* Select Keahlian */}
             <select
-              className="form-select"
+              className="form-select rounded-3"
               style={{ maxWidth: "200px" }}
               value={selectedKeahlian}
               onChange={(e) => setSelectedKeahlian(e.target.value)}
             >
-              <option value="">Tutup Keahlian</option>
-              {keahlianList.map((item, i) => (
-                <option key={i} value={item}>
+              <option value="">Keahlian</option>
+              {keahlianList.map((item, idx) => (
+                <option key={idx} value={item}>
                   {item}
                 </option>
               ))}
             </select>
+
+            {/* Select Skill */}
             <select
-              className="form-select"
+              className="form-select rounded-3"
               style={{ maxWidth: "200px" }}
               value={selectedSkill}
               onChange={(e) => setSelectedSkill(e.target.value)}
             >
-              <option value="">Tutup Skill</option>
-              {skillList.map((item, i) => (
-                <option key={i} value={item}>
+              <option value="">Skill</option>
+              {skillList.map((item, idx) => (
+                <option key={idx} value={item}>
                   {item}
                 </option>
               ))}
             </select>
+
+            {/* Select Asal/Daerah */}
             <select
-              className="form-select"
+              className="form-select rounded-3"
               style={{ maxWidth: "200px" }}
               value={selectedAsal}
               onChange={(e) => setSelectedAsal(e.target.value)}
             >
-              <option value="">Tutup Asal</option>
-              {AsalList.map((item, i) => (
-                <option key={i} value={item}>
+              <option value="">Daerah Asal</option>
+              {AsalList.map((item, idx) => (
+                <option key={idx} value={item}>
                   {item}
                 </option>
               ))}
             </select>
           </div>
-        )}
+        </div>
 
-        <div className="row mt-4">
-          {selectedKeahlian || selectedSkill || selectedAsal ? (
-            filteredSiswa.length > 0 ? (
-              filteredSiswa.map((s) => (
-                <div className="col-6 col-md-4 mb-4" key={s.id}>
-                  <motion.div
-                    className="position-relative overflow-hidden rounded-4"
-                    initial="hidden"
-                    whileInView="visible"
-                    viewport={{ once: true }}
-                    variants={fadeInUp}
-                    style={{
-                      height: "450px",
-                      cursor: "crosshair",
-                      boxShadow: "0 4px 15px rgb(33, 33, 90)",
-                    }}
-                  >
-                    <img
-                      src={`${imageBaseUrl}${s.foto}`}
-                      className="w-100 h-100"
-                      style={{
-                        objectFit: "cover",
-                        filter: "brightness(70%)",
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        zIndex: 1,
-                      }}
-                      alt={s.name}
-                    />
-                    <div
-                      className="position-relative text-white d-flex flex-column justify-content-end p-4"
-                      style={{ height: "100%", zIndex: 2 }}
-                    >
+        <div className="row">
+          {filteredSiswa.length > 0 ? (
+            filteredSiswa.map((s) => (
+              <div className="col-12 col-md-6 col-lg-4 mb-4" key={s.id}>
+                <div className="card h-100 shadow-sm border-0">
+                  <div className="card-body">
+                    <div className="d-flex align-items-center mb-3">
+                      <img
+                        src={`${imageBaseUrl}${s.foto}`}
+                        alt={s.name}
+                        className="rounded-circle me-3"
+                        style={{
+                          width: "70px",
+                          height: "70px",
+                          objectFit: "cover",
+                        }}
+                      />
                       <div>
-                        <h5 className="fw-bold mb-1">{s.name}</h5>
-                        <div className="d-flex justify-content-between small text-white">
-                          <span>{s.keahlian}</span>
+                        <h5 className="mb-0">{s.name}</h5>
+                        <div className="d-flex flex-column">
+                          <small className="text-muted">
+                            Angkatan {s.angkatan}
+                          </small>
+                          <small className="text-muted">
+                            Alamat {s.alamat}
+                          </small>
                         </div>
                       </div>
-                      <div className="mt-3">
-                        <button
-                          className="btn btn-light w-100 fw-semibold"
-                          onClick={() => {
-                            navigate(`/siswa/${s.id}`);
-                          }}
-                        >
-                          Lihat Siswa
-                        </button>
-                      </div>
                     </div>
-                  </motion.div>
+
+                    <p
+                      className=" mb-3"
+                      style={{
+                        fontSize: "0.9rem",
+                        backgroundColor: "#12294A",
+                        color: "white",
+                        padding: "5px",
+                        borderRadius: "5px",
+                        width: "fit-content",
+                      }}
+                    >
+                      <strong>{s.keahlian}</strong>
+                    </p>
+
+                    <p className="mb-1">
+                      <i className="bi bi-building me-1"></i>
+                      {s.instansi || "-"}, {s.posisi || "-"}
+                    </p>
+                    <p className="small mb-3">
+                      <i className="bi bi-lightning-fill me-1"></i>
+                      {s.skill || "-"}
+                    </p>
+
+                    <div className="mt-auto">
+                      <button
+                        className="btn w-100"
+                        style={{ backgroundColor: "#12294A", color: "white" }}
+                        onClick={() => navigate(`/siswa/${s.id}`)}
+                      >
+                        Lihat Profile
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              ))
-            ) : (
-              <p className="text-center text-muted">
-                Tidak ada siswa ditemukan.
-              </p>
-            )
+              </div>
+            ))
           ) : (
-            <div>
-              <p className="text-center text-muted">Mau cari siswa berbakat?</p>
-              <p className="text-center text-muted">
-                🔍Gunakan filter di atas untuk mulai menelusuri data siswa.
+            <div className="text-center text-muted mt-4">
+              <p>
+                🔍 Gunakan filter di atas untuk mulai menelusuri data siswa.
               </p>
             </div>
           )}
         </div>
       </motion.div>
-
       {/* Project */}
       <motion.div
         className="mt-5 mb-5 p-5"
@@ -669,7 +732,6 @@ function Home() {
           </div>
         </div>
       </motion.div>
-
       {/* Mitra */}
       <motion.div
         className="my-5 py-5 container"
@@ -713,7 +775,6 @@ function Home() {
           </div>
         </div>
       </motion.div>
-
       {/* Modal */}
       {selectedProject && (
         <div

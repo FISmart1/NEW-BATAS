@@ -107,10 +107,10 @@ export default function App() {
                   className="fw-bold"
                   style={{ color: "#12294A", fontSize: "28px" }}
                 >
-                  BATAS
+                  BEST
                 </span>
                 <span className="text-muted" style={{ fontSize: "13px" }}>
-                  Bazma Talent Showcase
+                  Bazma Excellent Showcase Of Talents
                 </span>
               </div>
 
@@ -266,9 +266,8 @@ export default function App() {
               <div className="col-12 col-md-4"></div>
               <div className="col-12 col-md-6 d-flex justify-content-between flex-end">
                 <div className="mb-3">
-                  <h6 className="fw-bold">Beranda</h6>
-                  <p className="mb-1">Siswa</p>
-                  <p className="mb-0">Team Dev</p>
+                  <h6 className="fw-bold">Home</h6>
+                  <p className="mb-1">Student</p>
                 </div>
                 <div className="mb-3">
                   <h6 className="fw-bold">Portofolio</h6>
@@ -289,7 +288,7 @@ export default function App() {
             </div>
             <hr className="border-white my-3" />
             <div className="d-flex justify-content-between align-items-center flex-wrap">
-              <p className="mb-0">EST 2025 From SMK TI BAZMA</p>
+              <p className="mb-3"><strong>© Team Developer</strong>   Ristina Eka Salsabila S.Kom - Ir Nur Yusuf Ferdiansyah M.Kom S.Pd S.Tr.T - Dr Iqbal Asqalani S.kom </p>
               <div>
                 <a href="#" className="text-white me-3 fs-5">
                   <i className="bi bi-instagram"></i>
