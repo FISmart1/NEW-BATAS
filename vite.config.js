@@ -8,7 +8,7 @@ export default defineConfig({
     allowedHosts: [
       'localhost',
       '127.0.0.1',
-      'a2bc-180-243-136-250.ngrok-free.app', // ganti sesuai domain ngrok kamu
+      'best.smktibazma.com',
     ],
   },
 })
