@@ -12,7 +12,7 @@ import faray from "../assets/faray.png";
 import rehan from "../assets/rehan.png";
 import sahrul from "../assets/sahrul.png";
 import mado from "../assets/mado.png";
-import pertalife from "../assets/pertalife.png";
+import pertalife from "../assets/Pertalife.png";
 import yakes from "../assets/logo-yakes.png";
 import ptn from "../assets/ptn.png";
 import hulurokan from "../assets/hulu-rokan.png";
