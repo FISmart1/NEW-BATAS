@@ -15,7 +15,7 @@ import ptc from "../assets/ptc.png";
 import pertaminageo from "../assets/pertaminageo.png";
 import retail from "../assets/retail.png";
 import ssc from "../assets/ssc.png";
-import pertalife from "../assets/pertalife.png";
+import pertalife from "../assets/perta.png";
 import sekolah from "../assets/sekolah.png";
 import sas from "../assets/sas.png";
 import absensi from "../assets/absensi.png";
