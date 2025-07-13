@@ -1,230 +1,248 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 
 function SiswaByAngkatan() {
   const { angkatan } = useParams();
   const navigate = useNavigate();
+  
+  // State management
   const [siswa, setSiswa] = useState([]);
   const [filteredSiswa, setFilteredSiswa] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [keahlianList, setKeahlianList] = useState([]);
-  const [selectedKeahlian, setSelectedKeahlian] = useState("");
-  const [skillList, setSkillList] = useState([]);
-  const [selectedSkill, setSelectedSkill] = useState("");
   const [showFilter, setShowFilter] = useState(true);
-  const [selectedAngkatan, setSelectedAngkatan] = useState(angkatan || "all");
-
-  const [daerahList, setDaerahList] = useState([]);
-  const [posisiList, setPosisiList] = useState([]);
-  const [instansiList, setInstansiList] = useState([]);
-  const [selectedPosisi, setSelectedPosisi] = useState("");
-  const [selectedInstansi, setSelectedInstansi] = useState("");
-  const [selectedDaerah, setSelectedDaerah] = useState("");
-
-  const baseImageUrl = "http://localhost:3006/uploads/";
-  const angkatanList = Array.from({ length: 5 }, (_, i) => i + 1);
-
+  
+  // Filter options state
+  const [filters, setFilters] = useState({
+    angkatan: angkatan || "all",
+    keahlian: "",
+    skill: "",
+    daerah: "",
+    posisi: "",
+    instansi: ""
+  });
+  
+  // Filter lists
+  const [filterOptions, setFilterOptions] = useState({
+    keahlian: [],
+    skill: [],
+    daerah: [],
+    posisi: [],
+    instansi: []
+  });
+  
+  const angkatanList = [1, 2, 3, 4, 5];
+  const baseImageUrl = "http://10.255.255.13:3006/uploads/";
   const cardRefs = useRef([]);
 
+  // Fetch student data
   useEffect(() => {
-    setLoading(true);
-    axios
-      .get("http://localhost:3006/api/getsiswa")
-      .then((res) => {
-        const sorted = res.data.sort((a, b) => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get("http://10.255.255.13:3006/api/getsiswa");
+        const sortedData = response.data.sort((a, b) => {
           if (a.angkatan !== b.angkatan) return a.angkatan - b.angkatan;
           return a.name.localeCompare(b.name, "id", { sensitivity: "base" });
         });
-        setSiswa(sorted);
-        setFilteredSiswa(sorted);
-        setKeahlianList([
-          ...new Set(sorted.map((s) => s.keahlian).filter(Boolean)),
-        ]);
-        setDaerahList([
-          ...new Set(sorted.map((s) => s.alamat).filter(Boolean)),
-        ]);
-        setPosisiList([
-          ...new Set(sorted.map((s) => s.posisi).filter(Boolean)),
-        ]);
-        setInstansiList([
-          ...new Set(sorted.map((s) => s.instansi).filter(Boolean)),
-        ]);
-        const allSkills = sorted.flatMap((s) =>
-          s.skill ? s.skill.split(",").map((sk) => sk.trim()) : []
-        );
-        setSkillList([...new Set(allSkills)]);
+        
+        setSiswa(sortedData);
+        setFilteredSiswa(sortedData);
+        
+        // Extract unique filter options
+        setFilterOptions({
+          keahlian: [...new Set(sortedData.map(s => s.keahlian).filter(Boolean))],
+          daerah: [...new Set(sortedData.map(s => s.alamat).filter(Boolean))],
+          posisi: [...new Set(sortedData.map(s => s.posisi).filter(Boolean))],
+          instansi: [...new Set(sortedData.map(s => s.instansi).filter(Boolean))],
+          skill: [...new Set(
+            sortedData.flatMap(s => 
+              s.skill ? s.skill.split(",").map(sk => sk.trim()) : []
+            )
+          )]
+        });
+        
+      } catch (error) {
+        console.error("Error fetching student data:", error);
+      } finally {
         setLoading(false);
-      })
-      .catch((err) => {
-        console.error("Gagal mengambil data siswa:", err);
-        setLoading(false);
-      });
+      }
+    };
+
+    fetchData();
   }, []);
 
+  // Apply filters
   useEffect(() => {
     let result = [...siswa];
-    result = result.filter((s) =>
-      s.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-
-    if (selectedAngkatan !== "all" && selectedAngkatan !== "") {
-      result = result.filter(
-        (s) => String(s.angkatan) === String(selectedAngkatan)
+    
+    // Apply text search
+    if (searchTerm) {
+      result = result.filter(s => 
+        s.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    if (selectedKeahlian !== "") {
-      result = result.filter((s) => s.keahlian === selectedKeahlian);
-    }
-    if (selectedSkill !== "") {
-      result = result.filter((s) =>
-        s.skill?.toLowerCase().includes(selectedSkill.toLowerCase())
+    // Apply all other filters
+    result = result.filter(s => {
+      return (
+        (filters.angkatan === "all" || s.angkatan === Number(filters.angkatan)) &&
+
+        (!filters.keahlian || s.keahlian === filters.keahlian) &&
+        (!filters.skill || s.skill?.toLowerCase().includes(filters.skill.toLowerCase())) &&
+        (!filters.daerah || s.alamat?.toLowerCase().includes(filters.daerah.toLowerCase())) &&
+        (!filters.posisi || s.posisi?.toLowerCase().includes(filters.posisi.toLowerCase())) &&
+        (!filters.instansi || s.instansi?.toLowerCase().includes(filters.instansi.toLowerCase()))
       );
-    }
-    if (selectedDaerah !== "") {
-      result = result.filter((s) =>
-        s.alamat?.toLowerCase().includes(selectedDaerah.toLowerCase())
-      );
-    }
-    if (selectedPosisi !== "") {
-      result = result.filter((s) =>
-        s.posisi?.toLowerCase().includes(selectedPosisi.toLowerCase())
-      );
-    }
-    if (selectedInstansi !== "") {
-      result = result.filter((s) =>
-        s.instansi?.toLowerCase().includes(selectedInstansi.toLowerCase())
-      );
-    }
+    });
 
     setFilteredSiswa(result);
-  }, [
-    searchTerm,
-    selectedKeahlian,
-    selectedSkill,
-    selectedDaerah,
-    selectedAngkatan,
-    selectedPosisi,
-    selectedInstansi,
-    siswa,
-  ]);
+  }, [searchTerm, filters, siswa]);
 
+  // Intersection Observer for animations
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach((entry) => {
+        entries.forEach(entry => {
           if (entry.isIntersecting) {
-            entry.target.classList.add("show");
+            entry.target.classList.add("animate-fadeIn");
           }
         });
       },
       { threshold: 0.1 }
     );
 
-    cardRefs.current.forEach((el) => {
+    cardRefs.current.forEach(el => {
       if (el) observer.observe(el);
     });
 
     return () => {
-      cardRefs.current.forEach((el) => {
+      cardRefs.current.forEach(el => {
         if (el) observer.unobserve(el);
       });
     };
   }, [filteredSiswa]);
 
+  // Handle filter change
+  const handleFilterChange = (filterName, value) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterName]: value
+    }));
+  };
+
+  // Filter configuration
+  const filterConfig = [
+    
+    { label: "Keahlian", name: "keahlian", options: filterOptions.keahlian },
+    { label: "Skill", name: "skill", options: filterOptions.skill },
+    { label: "Asal Daerah", name: "daerah", options: filterOptions.daerah },
+    { label: "Posisi", name: "posisi", options: filterOptions.posisi },
+    { label: "Instansi", name: "instansi", options: filterOptions.instansi }
+  ];
+
   return (
-    <div className="container my-5 pt-5">
-      <div
+    <div className="container my-3 pt-5">
+      {/* Hero Section */}
+      <motion.div 
         className="text-center p-5 text-white rounded-4 mb-4"
         style={{ backgroundColor: "#12294A" }}
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
       >
-        <h1 className="display-5 fw-bold">Temukan Portofolio Siswa</h1>
-        <p className="lead">
-          Filter berdasarkan keahlian, angkatan, instansi, dan lebih banyak
-          lagi.
+        <h1 className="display-5 fw-bold mb-3">Temukan Portofolio Siswa</h1>
+        <p className="lead mb-4">
+          Jelajahi talenta-talenta terbaik dari berbagai angkatan
         </p>
-      </div>
+      </motion.div>
 
-      <div className="container pt-2 mb-3">
-        <div className="d-flex justify-content-center align-items-center gap-2">
-          <input
-            type="text"
-            className="form-control mb-3 text-center"
-            style={{ maxWidth: "800px" }}
-            placeholder="Cari berdasarkan nama siswa..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-
-          <div className="mb-3">
-            <button
-              className="btn"
-              style={{ border: "1px solid #12294A" }}
-              onClick={() => setShowFilter(!showFilter)}
-            >
-              {showFilter ? "Sembunyikan Filter" : "Tampilkan Filter"}
-            </button>
+      {/* Search and Filter Section */}
+      <div className="container pt-2 mb-4">
+        <div className="row justify-content-center">
+          <div className="col-md-8 mb-3">
+            <div className="input-group">
+              <span className="input-group-text bg-white">
+                <i className="bi bi-search"></i>
+              </span>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Cari siswa berdasarkan nama..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button 
+                className="btn"
+                style={{ backgroundColor: "#12294A", color: "white" }}
+                onClick={() => setShowFilter(!showFilter)}
+              >
+                {showFilter ? (
+                  <>
+                    <i className="bi bi-funnel-fill me-2"></i>
+                    Sembunyikan Filter
+                  </>
+                ) : (
+                  <>
+                    <i className="bi bi-funnel me-2"></i>
+                    Tampilkan Filter
+                  </>
+                )}
+              </button>
+            </div>
           </div>
         </div>
-        <p className="text-center text-muted">
-          Ditemukan <strong>{filteredSiswa.length}</strong> siswa
+
+        <p className="text-center mb-0">
+          Menampilkan <span className="badge" style={{ backgroundColor: "#12294A" }}>{filteredSiswa.length}</span> siswa
         </p>
       </div>
 
-      <div className={`filter-container ${showFilter ? "show" : ""} mb-4`}>
-        <div className="bg-light p-3 rounded shadow-sm">
-          <h5 className="fw-bold mb-3">Filter</h5>
-          <div className="row">
-            {[
-              {
-                label: "Angkatan",
-                value: selectedAngkatan,
-                list: angkatanList,
-                onChange: setSelectedAngkatan,
-                display: (v) => `Angkatan ${v}`,
-              },
-              {
-                label: "Keahlian",
-                value: selectedKeahlian,
-                list: keahlianList,
-                onChange: setSelectedKeahlian,
-              },
-              {
-                label: "Skill",
-                value: selectedSkill,
-                list: skillList,
-                onChange: setSelectedSkill,
-              },
-              {
-                label: "Asal Daerah",
-                value: selectedDaerah,
-                list: daerahList,
-                onChange: setSelectedDaerah,
-              },
-              {
-                label: "Posisi",
-                value: selectedPosisi,
-                list: posisiList,
-                onChange: setSelectedPosisi,
-              },
-              {
-                label: "Instansi",
-                value: selectedInstansi,
-                list: instansiList,
-                onChange: setSelectedInstansi,
-              },
-            ].map((filter, i) => (
-              <div className="col-md-4 mb-3" key={i}>
-                <label className="form-label fw-semibold">{filter.label}</label>
+      {/* Filter Panel */}
+      {showFilter && (
+        <motion.div 
+          className="bg-light p-4 rounded-4 shadow-sm mb-4"
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: 'auto' }}
+          exit={{ opacity: 0, height: 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          <div className="d-flex justify-content-between align-items-center mb-3">
+            <h5 className="fw-bold mb-0">
+              <i className="bi bi-sliders me-2"></i>
+              Filter Siswa
+            </h5>
+            <button 
+              className="btn btn-sm btn-outline-secondary"
+              onClick={() => {
+                setFilters({
+                  keahlian: "",
+                  skill: "",
+                  daerah: "",
+                  posisi: "",
+                  instansi: ""
+                });
+              }}
+            >
+              Reset Filter
+            </button>
+          </div>
+          
+          <div className="row g-3">
+            {filterConfig.map((filter, i) => (
+              <div className="col-md-4 col-6" key={i}>
+                <label className="form-label small fw-bold text-uppercase text-muted">
+                  {filter.label}
+                </label>
                 <select
                   className="form-select"
-                  value={filter.value}
-                  onChange={(e) => filter.onChange(e.target.value)}
+                  value={filters[filter.name]}
+                  onChange={(e) => handleFilterChange(filter.name, e.target.value)}
                 >
-                  <option value="">{`Semua ${filter.label}`}</option>
-                  {filter.list.map((item, idx) => (
+                  <option value="">Semua {filter.label}</option>
+                  {filter.options.map((item, idx) => (
                     <option key={idx} value={item}>
                       {filter.display ? filter.display(item) : item}
                     </option>
@@ -233,75 +251,103 @@ function SiswaByAngkatan() {
               </div>
             ))}
           </div>
-        </div>
-      </div>
+        </motion.div>
+      )}
 
-      <div className="row">
-        <div className="col-12">
-          {loading ? (
-            <p className="text-center">Loading...</p>
-          ) : filteredSiswa.length > 0 ? (
-            <div className="row">
-              {filteredSiswa.map((s, index) => (
-                <div
-                  key={s.id}
-                  className="col-6 col-md-4 mb-4 fade-in"
-                  ref={(el) => (cardRefs.current[index] = el)}
-                >
-                  <div
-                    className="position-relative overflow-hidden rounded-4"
-                    style={{
-                      height: "450px",
-                      cursor: "crosshair",
-                      animation: "rainbowShadow 5s infinite ease-in-out",
-                    }}
-                  >
-                    <img
-                      src={`${baseImageUrl}${s.foto}`}
-                      alt={s.name}
-                      className="w-100 h-100"
-                      style={{
-                        objectFit: "cover",
-                        filter: "brightness(70%)",
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        zIndex: 1,
-                      }}
-                    />
-                    <div
-                      className="position-relative text-white d-flex flex-column justify-content-end p-4"
-                      style={{ height: "100%", zIndex: 2 }}
-                    >
-                      <div>
-                        <h5 className="fw-bold mb-1">{s.name}</h5>
-                        <div className="d-flex justify-content-between small text-white">
-                          <span>{s.keahlian}</span>
-                          <span>{s.sekolah || "SMK TI BAZMA"}</span>
-                        </div>
-                      </div>
-                      <div className="mt-3">
-                        <button
-                          className="btn btn-light w-100 fw-semibold"
-                          onClick={() => {
-                            navigate(`/siswa/${s.id}`);
-                          }}
-                        >
-                          Lihat Siswa
-                        </button>
-                      </div>
+      {/* Student Cards */}
+      {loading ? (
+        <div className="text-center py-5">
+          <div className="spinner-border text-primary" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </div>
+          <p className="mt-2">Memuat data siswa...</p>
+        </div>
+      ) : filteredSiswa.length > 0 ? (
+        <div className="row g-4">
+          {filteredSiswa.map((s, index) => (
+            <div 
+              key={s.id} 
+              className="col-12 col-sm-6 col-md-4 col-lg-3"
+              ref={el => cardRefs.current[index] = el}
+            >
+              <motion.div
+                className="card h-100 border-0 shadow-sm overflow-hidden hover-effect"
+                whileHover={{ y: -5, boxShadow: "0 10px 20px rgba(0,0,0,0.1)" }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className="position-relative" style={{ height: "200px" }}>
+                  <img
+                    src={`${baseImageUrl}${s.foto}`}
+                    alt={s.name}
+                    className="w-100 h-100 object-fit-cover"
+                  />
+                  <div className="position-absolute bottom-0 start-0 end-0 p-3 bg-gradient-dark">
+                    <div className="d-flex justify-content-between align-items-center">
+                      <span className="badge" style={{ backgroundColor: "#12294A" }}>{s.keahlian}</span>
+                      <span className="badge bg-secondary">Angkatan {s.angkatan}</span>
                     </div>
                   </div>
                 </div>
-              ))}
+                
+                <div className="card-body">
+                  <h5 className="card-title fw-bold mb-1">{s.name}</h5>
+                  <p className="card-text small text-muted mb-2">
+                    {s.posisi && `${s.posisi} di `}
+                    {s.instansi || "SMK TI BAZMA"}
+                  </p>
+                  
+                  {s.skill && (
+                    <div className="mb-3">
+                      {s.skill.split(',').slice(0, 3).map((skill, i) => (
+                        <span key={i} className="badge bg-light text-dark me-1 mb-1">
+                          {skill.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                  
+                  <button
+                    className="btn w-100 mt-auto"
+                    style={{ backgroundColor: "#12294A", color: "white" }}
+                    onClick={() => navigate(`/siswa/${s.id}`)}
+                  >
+                    Lihat Profil <i className="bi bi-arrow-right ms-2"></i>
+                  </button>
+                </div>
+              </motion.div>
             </div>
-          ) : (
-            <p className="text-muted text-center mt-4">
-              Tidak ada siswa ditemukan.
-            </p>
-          )}
+          ))}
         </div>
-      </div>
+      ) : (
+        <div className="text-center py-5">
+          <div className="display-1 text-muted mb-3">
+            <i className="bi bi-people"></i>
+          </div>
+          <h4 className="mb-3">Tidak ada siswa ditemukan</h4>
+          <p className="text-muted mb-4">
+            Coba gunakan kata kunci atau filter yang berbeda
+          </p>
+          <button 
+            className="btn btn-primary"
+            onClick={() => {
+              setSearchTerm('');
+              setFilters({
+                angkatan: "all",
+                keahlian: "",
+                skill: "",
+                daerah: "",
+                posisi: "",
+                instansi: ""
+              });
+            }}
+          >
+            <i className="bi bi-arrow-counterclockwise me-2"></i>
+            Reset Pencarian
+          </button>
+        </div>
+      )}
     </div>
   );
 }

@@ -35,7 +35,7 @@ useEffect(() => {
         <div className="shadowh"></div>
       </div>
       <div className="text-section">
-        <h2>Buka Porto</h2>
+        <h2>BEST</h2>
       </div>
     </div>
     );

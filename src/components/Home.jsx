@@ -4,29 +4,62 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Link, useNavigate } from "react-router-dom";
 import { fadeInUp } from "./utils/animations";
 
-import kong from "../assets/kong.png";
-import firman from "../assets/firman.png";
-import azan from "../assets/azan.png";
-import ibrahim from "../assets/ibrahim.png";
-import faray from "../assets/faray.png";
-import rehan from "../assets/rehan.png";
-import sahrul from "../assets/sahrul.png";
-import mado from "../assets/mado.png";
+// Import assets
 import yakes from "../assets/logo-yakes.png";
 import ptn from "../assets/ptn.png";
 import hulurokan from "../assets/hulu-rokan.png";
-import bareng from "../assets/bareng.png";
+import elnusa from "../assets/elnusa.png";
+import pertamina from "../assets/pertamina.png";
+import pgn from "../assets/pgn.png";
+import ptc from "../assets/ptc.png";
+import pertaminageo from "../assets/pertaminageo.png";
+import retail from "../assets/retail.png";
+import ssc from "../assets/ssc.png";
+import pertalife from "../assets/pertalife.png";
 import sekolah from "../assets/sekolah.png";
 import sas from "../assets/sas.png";
 import absensi from "../assets/absensi.png";
 import orang from "../assets/orang.png";
+import webJurnal from "../assets/web-jurnal.png";
 
 function Home() {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [direction, setDirection] = useState(0);
+  const [text, setText] = useState("");
+  const [greetIndex, setGreetIndex] = useState(0);
+  const [charIndex, setCharIndex] = useState(0);
+  const [projects, setProjects] = useState([]);
+  const [nonPelajar, setNonPelajar] = useState([]);
+  const [allSiswa, setAllSiswa] = useState([]);
+  const [filteredSiswa, setFilteredSiswa] = useState([]);
+  const [selectedProject, setSelectedProject] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [skillList, setSkillList] = useState([]);
+  const [keahlianList, setKeahlianList] = useState([]);
+  const [AsalList, setAsalList] = useState([]);
+  const [selectedSkill, setSelectedSkill] = useState("");
+  const [selectedKeahlian, setSelectedKeahlian] = useState("");
+  const [selectedAsal, setSelectedAsal] = useState("");
+  const [reverseAnimation, setReverseAnimation] = useState(false);
 
-  const truncateText = (text, maxLength = 120) =>
-    text.length > maxLength ? text.substring(0, maxLength) + "..." : text;
+  const nonPelajarScrollRef = useRef(null);
+  const mitraRef = useRef(null);
+  const imageBaseUrl = "http://10.255.255.13:3006/uploads/";
+  const logos = [
+    yakes,
+    ptn,
+    hulurokan,
+    elnusa,
+    pertamina,
+    pgn,
+    ptc,
+    pertaminageo,
+    retail,
+    ssc,
+    pertalife,
+  ];
+
   const greetings = [
     "Welcome To",
     "Selamat Datang",
@@ -35,30 +68,87 @@ function Home() {
     "Bienvenue",
   ];
 
-  const [text, setText] = useState("");
-  const [greetIndex, setGreetIndex] = useState(0);
-  const [charIndex, setCharIndex] = useState(0);
+  const truncateText = (text, maxLength = 120) =>
+    text.length > maxLength ? `${text.substring(0, maxLength)}...` : text;
 
-  const [projects, setProjects] = useState([]);
-  const [nonPelajar, setNonPelajar] = useState([]);
-  const [allSiswa, setAllSiswa] = useState([]);
-  const [filteredSiswa, setFilteredSiswa] = useState([]);
-  const [selectedProject, setSelectedProject] = useState(null);
-  const [showFilter, setShowFilter] = useState(true);
+  const handleDoubleClick = () => {
+    setReverseAnimation((prev) => !prev);
+  };
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [skillList, setSkillList] = useState([]);
-  const [keahlianList, setKeahlianList] = useState([]);
-  const [AsalList, setAsalList] = useState([]);
-  const [selectedSkill, setSelectedSkill] = useState("");
-  const [selectedKeahlian, setSelectedKeahlian] = useState("");
-  const [selectedAsal, setSelectedAsal] = useState("");
+  const scrollLeft = () => {
+    if (currentIndex > 0) {
+      setDirection(-1);
+      setCurrentIndex(currentIndex - 1);
+    }
+  };
 
-  const nonPelajarScrollRef = useRef(null);
-  const mitraRef = useRef(null);
-  const imageBaseUrl = "http://localhost:3006/uploads/";
-  const logos = [ yakes, ptn, hulurokan];
+  const scrollRight = () => {
+    if (currentIndex < nonPelajar.length - 1) {
+      setDirection(1);
+      setCurrentIndex(currentIndex + 1);
+    }
+  };
 
+  const handleCloseModal = () => {
+    setSelectedProject(null);
+  };
+
+  // Animation variants
+  const slideVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 300 : -300,
+      opacity: 0,
+    }),
+    center: {
+      x: 0,
+      opacity: 1,
+    },
+    exit: (direction) => ({
+      x: direction < 0 ? 300 : -300,
+      opacity: 0,
+    }),
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const [siswaRes, projectsRes] = await Promise.all([
+          axios.get("http://10.255.255.13:3006/api/getsiswa"),
+          axios.get("http://10.255.255.13:3006/api/projects"),
+        ]);
+
+        const siswaData = siswaRes.data.filter((s) => s.status === "alumni");
+        const nonPelajarData = siswaData.filter(
+          (s) => s.posisi !== "Pelajar" && s.instansi?.trim()
+        );
+
+        setNonPelajar(nonPelajarData);
+        setAllSiswa(siswaData);
+        setFilteredSiswa(siswaData);
+        setProjects(projectsRes.data);
+
+        // Extract unique values
+        const keahlianSet = new Set(
+          siswaData.map((s) => s.keahlian).filter(Boolean)
+        );
+        const asalSet = new Set(siswaData.map((s) => s.alamat).filter(Boolean));
+        const allSkills = siswaData.flatMap((s) =>
+          s.skill ? s.skill.split(",").map((sk) => sk.trim()) : []
+        );
+
+        setKeahlianList([...keahlianSet]);
+        setAsalList([...asalSet]);
+        setSkillList([...new Set(allSkills)]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Greeting animation
   useEffect(() => {
     const currentGreeting = greetings[greetIndex];
     if (charIndex < currentGreeting.length) {
@@ -77,44 +167,10 @@ function Home() {
     }
   }, [charIndex, greetIndex]);
 
-  useEffect(() => {
-    axios.get("http://localhost:3006/api/getsiswa").then((res) => {
-      const data = res.data;
-
-      // 🔍 Filter hanya siswa yang status-nya 'alumni'
-      const alumniOnly = data.filter((s) => s.status === "alumni");
-
-      // 🔍 Filter siswa non-pelajar (untuk slider/tampilan khusus)
-      const nonPelajarData = alumniOnly.filter((s) => s.posisi !== "Pelajar");
-      setNonPelajar(nonPelajarData);
-
-      // 🔍 Simpan semua alumni ke allSiswa (untuk keperluan filter selanjutnya)
-      setAllSiswa(alumniOnly);
-      setFilteredSiswa(alumniOnly); // tampilkan awal semua alumni
-
-      // 🔍 Buat daftar unik keahlian, asal, skill dari alumniOnly
-      const keahlianSet = new Set(
-        alumniOnly.map((s) => s.keahlian).filter(Boolean)
-      );
-      const asalSet = new Set(alumniOnly.map((s) => s.alamat).filter(Boolean));
-      const allSkills = alumniOnly.flatMap((s) =>
-        s.skill ? s.skill.split(",").map((sk) => sk.trim()) : []
-      );
-
-      setKeahlianList([...keahlianSet]);
-      setAsalList([...asalSet]);
-      setSkillList([...new Set(allSkills)]);
-    });
-
-    axios
-      .get("http://localhost:3006/api/projects")
-      .then((res) => setProjects(res.data));
-  }, []);
-
+  // Filter students
   useEffect(() => {
     const filtered = allSiswa.filter((s) => {
       const searchLower = searchTerm.toLowerCase();
-
       const matchSearch =
         s.name.toLowerCase().includes(searchLower) ||
         (s.keahlian && s.keahlian.toLowerCase().includes(searchLower)) ||
@@ -122,9 +178,7 @@ function Home() {
 
       const matchKeahlian =
         selectedKeahlian === "" || s.keahlian === selectedKeahlian;
-
       const matchAsal = selectedAsal === "" || s.alamat === selectedAsal;
-
       const matchSkill =
         selectedSkill === "" ||
         (s.skill &&
@@ -139,9 +193,11 @@ function Home() {
     setFilteredSiswa(filtered);
   }, [searchTerm, selectedKeahlian, selectedSkill, selectedAsal, allSiswa]);
 
+  // Auto-scroll for partner logos
   useEffect(() => {
     const track = mitraRef.current;
     if (!track) return;
+
     let animationFrame;
     const speed = 0.5;
     const scroll = () => {
@@ -155,44 +211,8 @@ function Home() {
     return () => cancelAnimationFrame(animationFrame);
   }, []);
 
-  const scrollLeft = () => {
-    if (currentIndex > 0) {
-      setDirection(-1);
-      setCurrentIndex(currentIndex - 1);
-    }
-  };
-
-  const scrollRight = () => {
-    if (currentIndex < nonPelajar.length - 1) {
-      setDirection(1);
-      setCurrentIndex(currentIndex + 1);
-    }
-  };
-
-  const slideVariants = {
-    enter: (direction) => ({
-      x: direction > 0 ? 300 : -300,
-      opacity: 0,
-    }),
-    center: {
-      x: 0,
-      opacity: 1,
-    },
-    exit: (direction) => ({
-      x: direction < 0 ? 300 : -300,
-      opacity: 0,
-    }),
-  };
-
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setSelectedProject(null);
-  };
-  const [direction, setDirection] = useState(0); // -1 untuk kiri, 1 untuk kanan
+  // Touch events for alumni slider
   useEffect(() => {
-    let touchStartX = 0;
-    let touchEndX = 0;
-
     const handleTouchStart = (e) => {
       touchStartX = e.changedTouches[0].screenX;
     };
@@ -205,12 +225,14 @@ function Home() {
     const handleSwipe = () => {
       const delta = touchStartX - touchEndX;
       if (Math.abs(delta) > 50) {
-        if (delta > 0) scrollRight();
-        else scrollLeft();
+        delta > 0 ? scrollRight() : scrollLeft();
       }
     };
 
+    let touchStartX = 0;
+    let touchEndX = 0;
     const container = nonPelajarScrollRef.current;
+
     if (container) {
       container.addEventListener("touchstart", handleTouchStart);
       container.addEventListener("touchend", handleTouchEnd);
@@ -226,7 +248,7 @@ function Home() {
 
   return (
     <div className="flex-column flex-md-row">
-      {/* Hero */}
+      {/* Hero Section */}
       <motion.div
         className="py-5 position-relative overflow-hidden"
         initial="hidden"
@@ -237,45 +259,35 @@ function Home() {
       >
         <div className="container my-5">
           <div className="row align-items-center p-3">
-            {/* TEKS */}
             <div className="col-12 col-md-6 text-white mb-4 mb-md-0 text-center text-md-start">
               <h3 className="fw-semibold" style={{ minHeight: "2.5rem" }}>
                 {text}
                 <span className="blinking-cursor">|</span>
               </h3>
-
               <h1 className="display-4 fw-bold">BEST</h1>
-
-              {/* Subheadline */}
               <p className="fst-italic text-light">
                 Temukan talenta terbaik dari SMK TI Bazma dan lihat karya nyata
                 mereka.
               </p>
-
               <p className="text-justify">
                 BEST adalah platform untuk menampilkan portofolio siswa SMK.
                 Siswa dapat membagikan proyek mereka secara online dan
                 masyarakat bisa mengakses informasi tersebut dengan mudah.
               </p>
-
-              {/* Badge Keahlian */}
               <div className="d-flex flex-wrap gap-2 mt-3">
                 <span className="badge bg-light text-dark">Web Developer</span>
                 <span className="badge bg-light text-dark">UI/UX Design</span>
                 <span className="badge bg-light text-dark">Networking</span>
+                <span className="badge bg-light text-dark">IoT Engineer</span>
               </div>
-
-              {/* Tombol CTA */}
-              <a
-                href="/angkatan"
+              <Link
+                to="/angkatan"
                 className="btn text-black mt-4"
                 style={{ backgroundColor: "white" }}
               >
                 Lihat Siswa
-              </a>
+              </Link>
             </div>
-
-            {/* GAMBAR */}
             <div className="col-12 col-md-6 d-flex justify-content-center">
               <motion.img
                 src={orang}
@@ -290,25 +302,27 @@ function Home() {
           </div>
         </div>
       </motion.div>
-      {/* Tentang */}
-      {/* Non Pelajar */}
+
+      {/* Alumni Section */}
       <motion.div
-        className="container-fluid p-4  mt-5"
+        className="container-fluid p-4 mt-5"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <h2 className="text-center fw-bold display-6 mb-3 text-black">
-          🌟 Alumni Berposisi Khusus
-        </h2>
-        <p className="text-center mb-4 text-black fs-5">
-          Alumni yang telah bekerja di berbagai perusahaan ternama
-        </p>
+        <div className="d-flex flex-column align-items-center justify-content-center mx-auto">
+          <h2 className="text-center fw-bold mb-3 text-black col-12 col-md-8">
+            Jejak Alumni, Cermin Keberhasilan dan Kebermanfaatan
+          </h2>
+          <p className="text-justify mb-4 text-black col-12 col-md-8 ">
+            Dari ruang kelas menuju perusahaan terkemuka, alumni kami
+            membuktikan bahwa mimpi besar bisa terwujud melalui kerja keras dan
+            kompetensi.
+          </p>
+        </div>
 
         <div className="d-flex align-items-center justify-content-center container">
-          {/* Tombol kiri */}
-          {/* Tombol kiri */}
           <button
             className="btn btn-outline-light rounded-circle shadow d-none d-md-block"
             style={{
@@ -317,24 +331,24 @@ function Home() {
               height: "50px",
             }}
             onClick={scrollLeft}
+            aria-label="Previous alumni"
           >
             ←
           </button>
 
-          {/* Kontainer scroll */}
           <div
             ref={nonPelajarScrollRef}
-            className="d-flex align-items-center justify-content-center px-4 mb-3"
+            className="d-flex align-items-center justify-content-center px-4 mb-3 w-100"
             style={{
-              maxWidth: "90%",
-              overflowX: "hidden", // tetap hidden
-              touchAction: "pan-y", // biar vertical scroll tetap bisa
+              overflowX: "hidden",
+              position: "relative",
+              minHeight: "420px",
             }}
           >
             {nonPelajar.length > 0 && (
               <AnimatePresence custom={direction} mode="wait">
                 <motion.div
-                  key={currentIndex} // supaya Framer tahu ini konten baru
+                  key={currentIndex}
                   custom={direction}
                   variants={slideVariants}
                   initial="enter"
@@ -344,12 +358,11 @@ function Home() {
                     x: { type: "spring", stiffness: 300, damping: 30 },
                     opacity: { duration: 0.2 },
                   }}
-                  className="row w-100 align-items-center flex-column flex-md-row"
+                  className="row w-100 align-items-stretch flex-column flex-md-row"
+                  style={{ minHeight: "420px", width: "100%" }}
                 >
-                  {/* ROW RESPONSIF */}
                   <div className="row w-100 align-items-center flex-column flex-md-row">
-                    {/* Gambar */}
-                    <div className="col-12 col-md-6 text-center p-3">
+                    <div className="col-12 col-md-6 text-center">
                       <img
                         src={`${imageBaseUrl}${nonPelajar[currentIndex].foto}`}
                         className="img-fluid rounded-4"
@@ -357,17 +370,25 @@ function Home() {
                         style={{
                           height: "320px",
                           objectFit: "cover",
-                          width: "100%",
+                          maxWidth: "100%",
+                          minWidth: "100%",
                           boxShadow: "0 0 12px 0px #12294A",
                         }}
                       />
                     </div>
-                    {/* Informasi */}
-                    <div className="col-md-6 text-black text-justify text-md-start px-3 px-md-5 py-3 align-self-start">
+                    <div
+                      className="col-md-6 text-black text-justify text-md-start px-3 px-md-5 py-3"
+                      style={{
+                        minHeight: "320px",
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                      }}
+                    >
                       <h3 className="fw-bold">
                         {nonPelajar[currentIndex].name}
                       </h3>
-                      <p className="ml-3">
+                      <p className="ml-3" style={{ minHeight: "72px", maxWidth: "80%" }}>
                         {truncateText(
                           nonPelajar[currentIndex].deskripsi ||
                             "Tidak ada deskripsi",
@@ -393,8 +414,6 @@ function Home() {
             )}
           </div>
 
-          {/* Tombol kanan */}
-          {/* Tombol kanan */}
           <button
             className="btn btn-outline-light rounded-circle shadow d-none d-md-block"
             style={{
@@ -403,15 +422,15 @@ function Home() {
               height: "50px",
             }}
             onClick={scrollRight}
+            aria-label="Next alumni"
           >
             →
           </button>
         </div>
       </motion.div>
-      {/* Cari semua siswa */}
-      ...
+
+      {/* Stats Section */}
       <motion.div
-        id="cari-siswa"
         className="container-fluid"
         initial="hidden"
         whileInView="visible"
@@ -437,7 +456,6 @@ function Home() {
                 </p>
               </div>
             </div>
-
             <div className="col-12 col-md-4">
               <div className="d-flex flex-column align-items-center">
                 <div
@@ -454,7 +472,6 @@ function Home() {
                 </p>
               </div>
             </div>
-
             <div className="col-12 col-md-4">
               <div className="d-flex flex-column align-items-center">
                 <div
@@ -472,9 +489,9 @@ function Home() {
           </div>
         </div>
       </motion.div>
-      {/* Cari semua siswa */}
+
+      {/* Student Search Section */}
       <motion.div
-        id="cari-siswa"
         className="container my-5"
         initial="hidden"
         whileInView="visible"
@@ -482,20 +499,20 @@ function Home() {
         variants={fadeInUp}
       >
         <div className="container-fluid my-5">
-          <h2 style={{ color: "#12294A", textAlign: "center" }}>
+          <h2
+            className="fw-bold"
+            style={{ color: "#12294A", textAlign: "center" }}
+          >
             Temukan Talenta Terbaik
           </h2>
           <p className="text-muted text-center">
             Jelajahi profil siswa berbakat dari SMK TI Bazma dan temukan
-            kolaborator terbaik untuk proyek Anda.
+            kolaborator terbaik untuk proyek anda.
           </p>
         </div>
 
-        {/* Filter Siswa */}
-        {/* Filter Siswa */}
         <div className="container mb-5">
           <div className="bg-white shadow-sm rounded-4 px-3 px-md-5 py-4 mb-4 d-flex flex-column flex-lg-row align-items-stretch justify-content-between gap-3">
-            {/* Input Pencarian Nama/Keahlian */}
             <input
               type="text"
               className="form-control rounded-3 px-4"
@@ -504,8 +521,6 @@ function Home() {
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-
-            {/* Select Keahlian */}
             <select
               className="form-select rounded-3"
               style={{ maxWidth: "200px" }}
@@ -519,8 +534,6 @@ function Home() {
                 </option>
               ))}
             </select>
-
-            {/* Select Skill */}
             <select
               className="form-select rounded-3"
               style={{ maxWidth: "200px" }}
@@ -534,8 +547,6 @@ function Home() {
                 </option>
               ))}
             </select>
-
-            {/* Select Asal/Daerah */}
             <select
               className="form-select rounded-3"
               style={{ maxWidth: "200px" }}
@@ -555,8 +566,8 @@ function Home() {
         <div className="row">
           {filteredSiswa.length > 0 ? (
             filteredSiswa.map((s) => (
-              <div className="col-12 col-sm-6 col-lg-4 mb-4" key={s.id}>
-                <div className="card h-100 shadow-sm border-0">
+              <div className="col-6 col-sm-6 col-lg-4 mb-4" key={s.id}>
+                <div className="card h-100 shadow-custom border-0">
                   <div className="card-body d-flex flex-column">
                     <div
                       className="d-flex align-items-center mb-3"
@@ -642,7 +653,8 @@ function Home() {
           )}
         </div>
       </motion.div>
-      {/* Project */}
+
+      {/* Projects Section */}
       <motion.div
         className="mt-5 mb-5 p-5"
         style={{ backgroundColor: "#12294A" }}
@@ -654,26 +666,24 @@ function Home() {
         <div className="container text-white">
           <div className="row align-items-center text-justify gap-">
             <div className="col-md-5">
-              <h1 className="jua-regular">Project Siswa</h1>
+              <h1 className="fw-bold mb-3">Project Siswa</h1>
               <p>
                 Di balik setiap proyek, ada semangat belajar, kerja keras, dan
-                inovasi. Proyek-proyek ini adalah bukti bahwa siswa SMK TIBAZMA
+                inovasi. Proyek-proyek ini adalah bukti bahwa siswa SMK TI BAZMA
                 mampu menciptakan teknologi yang bermanfaat dan siap bersaing di
                 dunia industri maupun masyarakat.
               </p>
               <ul>
                 <li>SISMAKO (Sistem Managament Sekolah)</li>
-
                 <li>Webite Sekolah</li>
-
                 <li>Sistem Absensi</li>
+                <li>Jurnal PKL</li>
               </ul>
             </div>
             <div className="col-md-7 ml-5">
-              <div className="d-flex flex-wrap justify-content-center gap-3">
-                {/* Project 1 */}
+              <div className="row justify-content-center gap-3">
                 <motion.div
-                  className="card border-0 rounded p-0"
+                  className="col-3 col-md-6 card border-0 rounded p-0"
                   style={{
                     width: "300px",
                     height: "250px",
@@ -689,15 +699,15 @@ function Home() {
                     src={absensi}
                     className="w-100"
                     style={{ height: "360px", objectFit: "cover" }}
+                    alt="Absensi Project"
                   />
                   <div className="p-3 bg-white">
-                    <h5 className="text-dark">Absensi</h5>
+                    <h5 className="text-dark">Sistem Absensi</h5>
                   </div>
                 </motion.div>
 
-                {/* Project 2 */}
                 <motion.div
-                  className="card border-0 rounded p-0"
+                  className="col-3 col-md-6 card border-0 rounded p-0"
                   style={{
                     width: "300px",
                     height: "250px",
@@ -711,23 +721,19 @@ function Home() {
                 >
                   <img
                     src={sas}
-                    className=""
-                    style={{
-                      height: "360px",
-                      objectFit: "cover",
-                      width: "100%",
-                    }}
+                    className="w-100"
+                    style={{ height: "360px", objectFit: "cover" }}
+                    alt="Sismako Project"
                   />
                   <div className="p-3 bg-white">
-                    <h5 className="text-dark">Sismako</h5>
+                    <h5 className="text-dark">SISMAKO</h5>
                   </div>
                 </motion.div>
 
-                {/* Project 3 - di tengah bawah */}
                 <motion.div
-                  className="card border-0 rounded p-0 mt-4"
+                  className="col-3 col-md-6 card border-0 rounded p-0 mt-4"
                   style={{
-                    width: "600px",
+                    width: "300px",
                     height: "280px",
                     overflow: "hidden",
                     animation: "glowChange 4s infinite",
@@ -738,12 +744,36 @@ function Home() {
                   transition={{ duration: 0.6, delay: 0.4 }}
                 >
                   <img
-                    src={sekolah} // Ganti jika ada gambar lain untuk project ke-3
+                    src={sekolah}
                     className="w-100"
                     style={{ height: "220px", objectFit: "cover" }}
+                    alt="Website Sekolah Project"
                   />
                   <div className="p-3 bg-white">
                     <h5 className="text-dark">Website Sekolah</h5>
+                  </div>
+                </motion.div>
+                <motion.div
+                  className="col-3 col-md-6 card border-0 rounded p-0 mt-4"
+                  style={{
+                    width: "300px",
+                    height: "280px",
+                    overflow: "hidden",
+                    animation: "glowChange 4s infinite",
+                  }}
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  <img
+                    src={webJurnal}
+                    className="w-100"
+                    style={{ height: "220px", objectFit: "cover" }}
+                    alt="Website Sekolah Project"
+                  />
+                  <div className="p-3 bg-white">
+                    <h5 className="text-dark">Jurnal PKL</h5>
                   </div>
                 </motion.div>
               </div>
@@ -751,23 +781,22 @@ function Home() {
           </div>
         </div>
       </motion.div>
-      {/* Mitra */}
+
+      {/* Partners Section */}
       <motion.div
-        className="my-5 py-5 container"
+        className="my-5 py-5"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={fadeInUp}
       >
         <h1 className="text-center mb-4">Mitra Kami</h1>
-
-        {/* BAGIAN SCROLL: TARO DI LUAR CONTAINER */}
         <div className="px-2">
           <div
             ref={mitraRef}
             className="slider overflow-hidden w-100"
             style={{
-              width: "100vw", // benar-benar sepanjang layar
+              width: "100vw",
               whiteSpace: "nowrap",
             }}
           >
@@ -794,48 +823,6 @@ function Home() {
           </div>
         </div>
       </motion.div>
-      {/* Modal */}
-      {selectedProject && (
-        <div
-          className="modal fade show d-block"
-          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
-        >
-          <div className="modal-dialog modal-lg modal-dialog-centered">
-            <div className="modal-content border-0 bg-white">
-              <div className="modal-header">
-                <h5>{selectedProject.name_project}</h5>
-                <button
-                  type="button"
-                  className="btn-close"
-                  onClick={handleCloseModal}
-                ></button>
-              </div>
-              <div className="modal-body">
-                <img
-                  src={`${imageBaseUrl}${selectedProject.foto}`}
-                  className="img-fluid mb-3"
-                  alt={selectedProject.name_project}
-                />
-                <p>{selectedProject.deskripsi}</p>
-              </div>
-              <div className="modal-footer">
-                <Link
-                  to={`/project/${selectedProject.link_web}`}
-                  className="btn btn-primary"
-                >
-                  Lihat Project
-                </Link>
-                <button
-                  className="btn btn-secondary"
-                  onClick={handleCloseModal}
-                >
-                  Close
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

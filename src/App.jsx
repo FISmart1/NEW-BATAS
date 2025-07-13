@@ -5,16 +5,23 @@ import Sidebar from "./components/Sidebar";
 import bazmaLogo from "../src/assets/logo-bazma.png";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
+import best from "../src/assets/best.png";
 
 export default function App() {
   const navigate = useNavigate();
   const [showSidebar, setShowSidebar] = useState(false);
-  const { showLayout } = useContext(AuthContext);
+
   const [error, setError] = useState("");
   const [showModal, setShowModal] = useState(false);
   const [nis, setNis] = useState("");
   const [password, setPassword] = useState("");
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const { user, setUser, showLayout } = useContext(AuthContext);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loginRole, setLoginRole] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+
+  const [loginSuccess, setLoginSuccess] = useState(false); // 👈 tambahkan ini
 
   useEffect(() => {
     // Efek Bintang
@@ -55,28 +62,42 @@ export default function App() {
   const toggleSidebar = () => {
     setShowSidebar(!showSidebar);
   };
+  useEffect(() => {
+    if (isLoggedIn && user) {
+      console.log("🚀 Navigasi setelah login berhasil:", user, loginRole);
+
+      if (loginRole === "admin") {
+        navigate("/admin");
+      } else if (loginRole === "siswa") {
+        navigate(`/edit-siswa/${user.id}`);
+      }
+    }
+  }, [user, isLoggedIn, loginRole]);
 
   const handleLogin = async () => {
     try {
+      console.log("🟡 Mulai proses login...");
       const res = await axios.post("http://localhost:3006/api/login", {
         nis,
         password,
       });
 
-      if (res.data.success) {
-        setShowModal(false);
+      console.log("🟢 Response dari server:", res.data);
 
-        if (res.data.role === "admin") {
-          navigate("/admin");
-        } else if (res.data.role === "siswa") {
-          // Redirect ke halaman edit siswa berdasarkan ID
-          navigate(`/edit-siswa/${res.data.data.id}`);
-        }
+      if (res.data.success) {
+        const fullUserData = { ...res.data.data, role: res.data.role };
+        console.log("✅ Full user data yg akan disimpan:", fullUserData);
+
+        localStorage.setItem("user", JSON.stringify(fullUserData));
+        setUser(fullUserData);
+        setLoginRole(res.data.role); // 👈 simpan role dengan benar
+        setIsLoggedIn(true); // ✅ INI YANG BELUM ADA
+        setShowModal(false);
       } else {
         alert(res.data.message || "Login gagal");
       }
     } catch (err) {
-      console.error("Login gagal:", err.response?.data || err.message);
+      console.error("🔥 Error saat login:", err.response?.data || err.message);
       alert(err.response?.data?.message || "Terjadi kesalahan saat login");
     }
   };
@@ -103,14 +124,17 @@ export default function App() {
                 style={{ cursor: "pointer" }}
                 onClick={() => navigate("/home")}
               >
+                <img
+                  src={best}
+                  alt="Logo Bazma"
+                  className="logo"
+                  width={"100px"}
+                />
                 <span
-                  className="fw-bold"
-                  style={{ color: "#12294A", fontSize: "28px" }}
+                  className=""
+                  style={{ fontSize: "14px", marginLeft: "10px" }}
                 >
-                  BEST
-                </span>
-                <span className="text-muted" style={{ fontSize: "13px" }}>
-                  Bazma Excellent Showcase Of Talents
+                  Bazma Excelent Showcase Talent
                 </span>
               </div>
 
@@ -123,21 +147,100 @@ export default function App() {
                   <Link to="/angkatan" className="nav-link text-dark">
                     Student
                   </Link>
-                  <button
-                    className="btn"
-                    style={{ backgroundColor: "#12294A", color: "white" }}
-                    onClick={() => setShowModal(true)}
-                  >
-                    Login
-                  </button>
+                  {user ? (
+                    <div className="position-relative d-flex align-items-center">
+                      <img
+                        src={`http://localhost:3006/uploads/${user.foto}`}
+                        width={"30px"}
+                        height={"30px"}
+                        className="rounded-circle me-2"
+                        alt="User"
+                      />
+                      <button
+                        className="btn btn-sm dropdown-toggle"
+                        style={{
+                          backgroundColor: "transparent",
+                          border: "none",
+                          color: "black",
+                        }}
+                        onClick={() => setShowDropdown(!showDropdown)}
+                      >
+                        {user.role === "admin"
+                          ? "Hi Admin"
+                          : `Hi, ${user.name}`}
+                      </button>
+
+                      {showDropdown && (
+                        <div
+                          className="position-absolute bg-white border rounded shadow p-3"
+                          style={{
+                            top: "100%",
+                            right: 0,
+                            minWidth: 150,
+                            zIndex: 9999,
+                          }}
+                        >
+                          <div
+                            className="d-flex align-items-center gap-1 justify-content-center"
+                            style={{ padding: "10px 15px", color: "black" }}
+                          >
+                            <i class="bi bi-person-check"></i>
+                            <button
+                              className="dropdown-item"
+                              style={{ color: "black", padding: "5px 10px" }}
+                              onClick={() => {
+                                setShowDropdown(false);
+                                user.role === "admin"
+                                  ? navigate("/admin")
+                                  : navigate(`/edit-siswa/${user.id}`);
+                              }}
+                            >
+                              Go to Profile
+                            </button>
+                          </div>
+
+                          <div
+                            className="d-flex align-items-center gap-1 justify-content-center border border-danger"
+                            style={{ padding: "10px 15px", color: "red" }}
+                          >
+                            <i class="bi bi-box-arrow-right"></i>
+                            <button
+                              className="dropdown-item text-danger"
+                              style={{ color: "black" }}
+                              onClick={() => {
+                                localStorage.removeItem("user");
+                                setUser(null);
+                                setShowDropdown(false);
+                                navigate("/home");
+                              }}
+                            >
+                              Logout
+                            </button>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  ) : (
+                    <button
+                      className="btn"
+                      style={{ backgroundColor: "#12294A", color: "white" }}
+                      onClick={() => setShowModal(true)}
+                    >
+                      Login
+                    </button>
+                  )}
                 </div>
               </div>
 
               {/* Mobile Menu Button */}
               <div className="d-lg-none">
                 <button
-                  className="btn btn-outline-primary"
-                  style={{ borderRadius: "8px" }}
+                  className="btn "
+                  style={{
+                    borderRadius: "8px",
+                    backgroundColor: "#12294A",
+                    color: "white",
+                  }}
                   onClick={() => setShowMobileMenu(!showMobileMenu)}
                 >
                   <i className="bi bi-three-dots-vertical fs-4"></i>
@@ -174,16 +277,43 @@ export default function App() {
                 >
                   Student
                 </Link>
-                <button
-                  className="btn btn-ouline-custom w-100"
-                  style={{ border: "1px solid #12294A", color: "black" }}
-                  onClick={() => {
-                    setShowModal(true);
-                    setShowMobileMenu(false);
-                  }}
-                >
-                  Login
-                </button>
+                {user ? (
+                  <div className="d-flex flex-column gap-2">
+                    <button
+                      className=""
+                      style={{
+                        backgroundColor: "transparent",
+                        color: "black",
+                        border: "none",
+                      }}
+                      onClick={() =>
+                        user.role === "admin"
+                          ? navigate("/admin")
+                          : navigate(`/edit-siswa/${user.id}`)
+                      }
+                    >
+                      {user.role === "admin" ? "Hi Admin" : `Hi, ${user.name}`}
+                    </button>
+                    <button
+                      className="btn btn-outline-danger"
+                      onClick={() => {
+                        localStorage.removeItem("user");
+                        setUser(null);
+                        navigate("/home");
+                      }}
+                    >
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    className="btn"
+                    style={{ backgroundColor: "#12294A", color: "white" }}
+                    onClick={() => setShowModal(true)}
+                  >
+                    Login
+                  </button>
+                )}
               </div>
             )}
           </nav>
@@ -211,7 +341,7 @@ export default function App() {
             className="modal-content p-4 rounded bg-white"
             style={{ width: "90%", maxWidth: "400px" }}
           >
-            <h2 className="mb-3">Login Admin</h2>
+            <h2 className="mb-3">Login</h2>
             <input
               type="text"
               placeholder="NIS"
@@ -227,7 +357,8 @@ export default function App() {
               onChange={(e) => setPassword(e.target.value)}
             />
             <button
-              className="btn btn-primary w-100 mb-2"
+              className="btn w-100 mb-2"
+              style={{ backgroundColor: "#12294A", color: "white" }}
               onClick={handleLogin}
             >
               Login
@@ -249,46 +380,95 @@ export default function App() {
 
       {/* Footer */}
       {showLayout && (
-        <footer className="navbar-custom text-white pt-4">
+        <footer
+          className="navbar-custom text-white pt-4"
+          style={{ backgroundColor: "#12294A" }}
+        >
           <div className="container">
-            <div className="row">
-              <div className="col-12 col-md-2 mb-4">
-                <div className="d-flex align-items-center mb-3">
+            <div className="row gy-4">
+              {/* Logo & Slogan */}
+              <div className="col-12 col-md-4 col-lg-3">
+                <div className="d-flex align-items-center mb-2">
                   <img
                     src={bazmaLogo}
                     alt="Logo"
-                    style={{ width: "80px", marginRight: "10px" }}
+                    style={{ width: "60px", marginRight: "10px" }}
                   />
                   <h5 className="mb-0">SMK TI BAZMA</h5>
                 </div>
-                <p className="fw-bold">ENERGI MASA DEPAN INDONESIA</p>
+                <p className="fw-bold small">ENERGI MASA DEPAN INDONESIA</p>
               </div>
-              <div className="col-12 col-md-4"></div>
-              <div className="col-12 col-md-6 d-flex justify-content-between flex-end">
-                <div className="mb-3">
-                  <h6 className="fw-bold">Home</h6>
-                  <p className="mb-1">Student</p>
-                </div>
-                <div className="mb-3">
-                  <h6 className="fw-bold">Portofolio</h6>
-                  <p className="mb-1">SISMAKO</p>
-                  <p className="mb-1">SAS</p>
-                  <p className="mb-0">Buka Porto</p>
-                </div>
-                <div className="mb-3">
-                  <h6 className="fw-bold">Hubungi Kami</h6>
-                  <a
-                    href="https://smktibazma.com"
-                    className="text-white text-decoration-underline"
+
+              {/* Tentang Kami */}
+              <div className="col-6 col-md-4 col-lg-3">
+                <h6 className="fw-bold mb-2">Tentang Kami</h6>
+                <div className="d-flex flex-column">
+                  <Link
+                    to="/home"
+                    className="text-white text-decoration-none mb-1"
                   >
-                    smktibazma.com
-                  </a>
+                    Home
+                  </Link>
+                  <Link
+                    to="/angkatan"
+                    className="text-white text-decoration-none mb-1"
+                  >
+                    Student
+                  </Link>
+                  <Link
+                    to="/angkatan"
+                    className="text-white text-decoration-none"
+                  >
+                    Login
+                  </Link>
                 </div>
+              </div>
+
+              {/* Portofolio */}
+              <div className="col-6 col-md-4 col-lg-3">
+                <h6 className="fw-bold mb-2">Portofolio</h6>
+                <div className="d-flex flex-column">
+                  <Link
+                    to="https://sismako.smktibazma.com"
+                    className="text-white text-decoration-none mb-1"
+                  >
+                    SISMAKO
+                  </Link>
+                  <Link
+                    to="https://smktibazma.com"
+                    className="text-white text-decoration-none mb-1"
+                  >
+                    SAS
+                  </Link>
+                  <Link
+                    to="https://jurnal.smktibazma.com"
+                    className="text-white text-decoration-none"
+                  >
+                    Jurnal
+                  </Link>
+                </div>
+              </div>
+
+              {/* Kontak */}
+              <div className="col-12 col-md-12 col-lg-3">
+                <h6 className="fw-bold mb-2">Hubungi Kami</h6>
+                <a
+                  href="https://smktibazma.com"
+                  className="text-white text-decoration-underline"
+                >
+                  smktibazma.com
+                </a>
               </div>
             </div>
-            <hr className="border-white my-3" />
-            <div className="d-flex justify-content-between align-items-center flex-wrap">
-              <p className="mb-3"><strong>© Team Developer</strong>   Ristina Eka Salsabila S.Kom - Ir Nur Yusuf Ferdiansyah M.Kom S.Pd S.Tr.T - Dr Iqbal Asqalani S.kom </p>
+
+            <hr className="border-white my-4" />
+
+            {/* Bottom Footer */}
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
+              <p className="mb-0 text-center text-md-start small">
+                <strong>© Team Developer</strong> Ristina Eka Salsabila S.Kom -
+                Nur Yusuf Ferdiansyah - Muhammad Iqbal Asqalani
+              </p>
               <div>
                 <a href="#" className="text-white me-3 fs-5">
                   <i className="bi bi-instagram"></i>

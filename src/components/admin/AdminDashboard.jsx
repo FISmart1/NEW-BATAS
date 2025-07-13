@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { motion } from "framer-motion";
 
 function AdminDashboard() {
   const navigate = useNavigate();
@@ -9,10 +9,10 @@ function AdminDashboard() {
   const [totalProject, setTotalProject] = useState(0);
 
   useEffect(() => {
-    axios.get("http://localhost:3006/api/getsiswa").then((res) => {
+    axios.get("http://10.255.255.13:3006/api/getsiswa").then((res) => {
       setTotalSiswa(res.data.length);
     });
-    axios.get("http://localhost:3006/api/projects").then((res) => {
+    axios.get("http://10.255.255.13:3006/api/projects").then((res) => {
       setTotalProject(res.data.length);
     });
   }, []);
@@ -22,48 +22,33 @@ function AdminDashboard() {
       title: "Tambah Siswa",
       icon: "bi-person-plus",
       bg: "primary",
-      path: "/admin/add-siswa"
+      path: "/admin/add-siswa",
     },
     {
       title: "Tambah Pengalaman",
       icon: "bi-briefcase-fill",
       bg: "warning",
       textColor: "text-white",
-      path: "/admin/add-pengalaman"
+      path: "/admin/add-pengalaman",
     },
     {
       title: "Tambah Project",
       icon: "bi-folder-plus",
       bg: "info",
-      path: "/admin/add-project"
+      path: "/admin/add-project",
     },
-    {
-      title: "Project Pending",
-      icon: "bi-hourglass-split",
-      bg: "secondary",
-      path: "/admin/project-pending"
-    },
-    {
-      title: "Siswa Pending",
-      icon: "bi-person-lines-fill",
-      bg: "dark",
-      textColor: "text-white",
-      path: "/admin/siswa-pending"
-    },
-    {
-  title: "Pengalaman Pending",
-  icon: "bi-journal-check",
-  bg: "success",
-  textColor: "text-white",
-  path: "/admin/pengalaman-pending"
-}
   ];
 
   return (
     <div className="container py-4 mt-5">
       {/* Header */}
       <div className="d-flex align-items-center gap-3 mb-4">
-        <img src="/admin.png" alt="Admin" width="50" className="rounded-circle" />
+        <img
+          src="/admin.png"
+          alt="Admin"
+          width="50"
+          className="rounded-circle"
+        />
         <div>
           <h5 className="mb-0">Selamat Datang, Admin</h5>
           <small className="text-muted">Panel Kontrol Website</small>
@@ -97,7 +82,9 @@ function AdminDashboard() {
           >
             <button
               onClick={() => navigate(item.path)}
-              className={`btn btn-${item.bg} w-100 p-4 shadow-sm ${item.textColor || ""}`}
+              className={`btn btn-${item.bg} w-100 p-4 shadow-sm ${
+                item.textColor || ""
+              }`}
               style={{ textAlign: "left", fontSize: "1.1rem" }}
             >
               <i className={`bi ${item.icon} me-2`}></i> {item.title}

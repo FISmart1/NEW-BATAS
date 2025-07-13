@@ -1,7 +1,9 @@
 // EditSiswa.js
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { AuthContext } from "../../context/AuthContext";
 
 // Modal Komponen (untuk modularisasi lebih rapi)
 const ModalWrapper = ({ children, onClose }) => (
@@ -13,7 +15,10 @@ const ModalWrapper = ({ children, onClose }) => (
       backdropFilter: "blur(3px)",
     }}
   >
-    <div className="position-relative bg-white p-4 rounded shadow w-100" style={{ maxWidth: 480 }}>
+    <div
+      className="position-relative bg-white p-4 rounded shadow w-100"
+      style={{ maxWidth: 480 }}
+    >
       <button
         className="btn-close position-absolute top-0 end-0 m-3"
         onClick={onClose}
@@ -45,10 +50,18 @@ const EditSiswa = () => {
     tools: "",
     foto: null,
   });
+  const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    setUser(null);
+    navigate("/home");
+  };
 
   useEffect(() => {
     axios
-      .get(`http://localhost:3006/api/siswa/${id}`)
+      .get(`http://10.255.255.13:3006/api/siswa/${id}`)
       .then((res) => {
         setSiswa(res.data.siswa);
         setProjects(res.data.projects);
@@ -83,7 +96,7 @@ const EditSiswa = () => {
       if (fotoFile) fd.append("foto", fotoFile);
       if (formData.cv) fd.append("cv", formData.cv);
 
-      await axios.put(`http://localhost:3006/api/siswa/update/${id}`, fd);
+      await axios.put(`http://10.255.255.13:3006/api/siswa/update/${id}`, fd);
       alert("Data diperbarui!");
       closeModal();
     } catch (err) {
@@ -95,13 +108,11 @@ const EditSiswa = () => {
   const handlePengalamanSubmit = async (e) => {
     e.preventDefault();
     const fd = new FormData();
-    Object.entries(pengalamanForm).forEach(([key, val]) =>
-      fd.append(key, val)
-    );
+    Object.entries(pengalamanForm).forEach(([key, val]) => fd.append(key, val));
     fd.append("db_siswa_id", siswa.id);
     try {
-      await axios.post("http://localhost:3006/api/pengalaman/", fd);
-      const res = await axios.get(`http://localhost:3006/api/siswa/${id}`);
+      await axios.post("api/pengalaman/", fd);
+      const res = await axios.get(`http://10.255.255.13:3006/api/siswa/${id}`);
       setPengalaman(res.data.pengalaman);
       alert("Pengalaman ditambahkan!");
       closeModal();
@@ -115,13 +126,11 @@ const EditSiswa = () => {
     e.preventDefault();
     const fd = new FormData();
     fd.append("id", Date.now().toString());
-    Object.entries(projectForm).forEach(([key, val]) =>
-      fd.append(key, val)
-    );
+    Object.entries(projectForm).forEach(([key, val]) => fd.append(key, val));
     fd.append("db_siswa_id", siswa.id);
     try {
-      await axios.post("http://localhost:3006/api/project/upload", fd);
-      const res = await axios.get(`http://localhost:3006/api/siswa/${id}`);
+      await axios.post("http://10.255.255.13:3006/api/project/upload", fd);
+      const res = await axios.get(`http://10.255.255.13:3006/api/siswa/${id}`);
       setProjects(res.data.projects);
       alert("Project ditambahkan!");
       closeModal();
@@ -137,22 +146,25 @@ const EditSiswa = () => {
 
   return (
     <div className="container my-5">
+
       <div
         className="p-4 text-white rounded shadow"
         style={{ backgroundColor: "#12294A" }}
       >
         <div className="d-flex gap-4 align-items-center">
           <img
-            src={`http://localhost:3006/uploads/${siswa.foto}`}
+            src={`http://10.255.255.13:3006/uploads/${siswa.foto}`}
             alt={siswa.name}
             className="rounded-circle border border-white"
-            style={{ width: 100, height: 100, objectFit: "cover" }}
+            style={{ width: 200, height: 200, objectFit: "cover" }}
           />
           <div>
-            <h3 className="fw-bold">{siswa.name}</h3>
-            <p className="mb-1">NIS {siswa.id}</p>
+            <h3 className="fw-bold mb-2">{siswa.name}</h3>
+            <p className="mb-2">NIS {siswa.id}</p>
             {siswa.posisi && (
-              <span className="badge bg-white text-dark">{siswa.posisi}</span>
+              <span className="badge bg-white text-dark mb-2">
+                {siswa.posisi}
+              </span>
             )}
             <p className="mb-0">
               <i className="bi bi-geo-alt me-1"></i> {siswa.alamat}
@@ -166,7 +178,11 @@ const EditSiswa = () => {
         <div className="d-flex flex-wrap justify-content-center gap-2">
           {skills.length > 0 ? (
             skills.map((sk, idx) => (
-              <span key={idx} className="badge bg-primary px-3 py-2 rounded-pill">
+              <span
+                key={idx}
+                className="badge px-3 py-2 rounded-pill"
+                style={{ backgroundColor: "#12294A" }}
+              >
                 {sk}
               </span>
             ))
@@ -179,9 +195,24 @@ const EditSiswa = () => {
       {/* Card Aksi */}
       <div className="row mt-4">
         {[
-          { icon: "bi-clipboard", title: "Project", desc: "Tugas & Proyek", type: "project" },
-          { icon: "bi-journal-text", title: "Pengalaman", desc: "Selama di BAZMA", type: "pengalaman" },
-          { icon: "bi-person-vcard", title: "Data Pribadi", desc: "Tentang kamu", type: "pribadi" },
+          {
+            icon: "bi-clipboard",
+            title: "Project",
+            desc: "Tugas & Proyek",
+            type: "project",
+          },
+          {
+            icon: "bi-journal-text",
+            title: "Pengalaman",
+            desc: "Selama di BAZMA",
+            type: "pengalaman",
+          },
+          {
+            icon: "bi-person-vcard",
+            title: "Data Pribadi",
+            desc: "Tentang kamu",
+            type: "pribadi",
+          },
         ].map((item, idx) => (
           <div className="col-md-4 mb-3" key={idx}>
             <div className="card text-center shadow h-100 border-0">
@@ -190,7 +221,8 @@ const EditSiswa = () => {
                 <h6 className="fw-bold">{item.title}</h6>
                 <p className="text-muted small">{item.desc}</p>
                 <button
-                  className="btn btn-sm btn-outline-primary"
+                  className="btn"
+                  style={{ backgroundColor: "#12294A", color: "white" }}
                   onClick={() => openModal(item.type)}
                 >
                   {item.type === "pribadi" ? "Edit" : "Tambah"} Data
@@ -206,7 +238,20 @@ const EditSiswa = () => {
         <ModalWrapper onClose={closeModal}>
           <h5 className="fw-bold mb-3">Edit Data Pribadi</h5>
           <form onSubmit={handleSubmit}>
-            {["name", "angkatan", "keahlian", "alamat", "deskripsi", "posisi", "instansi", "skill", "linkedin", "email", "telepon", "password"].map((field, idx) => (
+            {[
+              "name",
+              "angkatan",
+              "keahlian",
+              "alamat",
+              "deskripsi",
+              "posisi",
+              "instansi",
+              "skill",
+              "linkedin",
+              "email",
+              "telepon",
+              "password",
+            ].map((field, idx) => (
               <input
                 key={idx}
                 type="text"
@@ -217,7 +262,11 @@ const EditSiswa = () => {
                 placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
               />
             ))}
-            <input type="file" className="form-control mb-2" onChange={handleFileChange} />
+            <input
+              type="file"
+              className="form-control mb-2"
+              onChange={handleFileChange}
+            />
             <input
               type="file"
               className="form-control mb-3"
@@ -236,11 +285,55 @@ const EditSiswa = () => {
         <ModalWrapper onClose={closeModal}>
           <h5 className="fw-bold mb-3">Tambah Pengalaman</h5>
           <form onSubmit={handlePengalamanSubmit}>
-            <input type="text" name="name" placeholder="Nama" value={pengalamanForm.name} onChange={(e) => setPengalamanForm({ ...pengalamanForm, name: e.target.value })} className="form-control mb-2" required />
-            <input type="text" name="lokasi" placeholder="Lokasi" value={pengalamanForm.lokasi} onChange={(e) => setPengalamanForm({ ...pengalamanForm, lokasi: e.target.value })} className="form-control mb-2" required />
-            <textarea name="deskripsi" rows="3" placeholder="Deskripsi" value={pengalamanForm.deskripsi} onChange={(e) => setPengalamanForm({ ...pengalamanForm, deskripsi: e.target.value })} className="form-control mb-2" required />
-            <input type="file" className="form-control mb-3" onChange={(e) => setPengalamanForm({ ...pengalamanForm, foto: e.target.files[0] })} />
-            <button type="submit" className="btn btn-primary w-100">Simpan</button>
+            <input
+              type="text"
+              name="name"
+              placeholder="Nama"
+              value={pengalamanForm.name}
+              onChange={(e) =>
+                setPengalamanForm({ ...pengalamanForm, name: e.target.value })
+              }
+              className="form-control mb-2"
+              required
+            />
+            <input
+              type="text"
+              name="lokasi"
+              placeholder="Lokasi"
+              value={pengalamanForm.lokasi}
+              onChange={(e) =>
+                setPengalamanForm({ ...pengalamanForm, lokasi: e.target.value })
+              }
+              className="form-control mb-2"
+              required
+            />
+            <textarea
+              name="deskripsi"
+              rows="3"
+              placeholder="Deskripsi"
+              value={pengalamanForm.deskripsi}
+              onChange={(e) =>
+                setPengalamanForm({
+                  ...pengalamanForm,
+                  deskripsi: e.target.value,
+                })
+              }
+              className="form-control mb-2"
+              required
+            />
+            <input
+              type="file"
+              className="form-control mb-3"
+              onChange={(e) =>
+                setPengalamanForm({
+                  ...pengalamanForm,
+                  foto: e.target.files[0],
+                })
+              }
+            />
+            <button type="submit" className="btn btn-primary w-100">
+              Simpan
+            </button>
           </form>
         </ModalWrapper>
       )}
@@ -249,12 +342,59 @@ const EditSiswa = () => {
         <ModalWrapper onClose={closeModal}>
           <h5 className="fw-bold mb-3">Tambah Project</h5>
           <form onSubmit={handleProjectSubmit}>
-            <input type="text" name="name_project" value={projectForm.name_project} onChange={(e) => setProjectForm({ ...projectForm, name_project: e.target.value })} placeholder="Nama Project" className="form-control mb-2" required />
-            <input type="text" name="link_web" value={projectForm.link_web} onChange={(e) => setProjectForm({ ...projectForm, link_web: e.target.value })} placeholder="Link Web" className="form-control mb-2" />
-            <textarea name="deskripsi" rows="3" value={projectForm.deskripsi} onChange={(e) => setProjectForm({ ...projectForm, deskripsi: e.target.value })} placeholder="Deskripsi" className="form-control mb-2" required />
-            <input type="text" name="tools" value={projectForm.tools} onChange={(e) => setProjectForm({ ...projectForm, tools: e.target.value })} placeholder="Tools (pisahkan dengan koma)" className="form-control mb-2" required />
-            <input type="file" className="form-control mb-3" onChange={(e) => setProjectForm({ ...projectForm, foto: e.target.files[0] })} />
-            <button type="submit" className="btn btn-primary w-100">Simpan</button>
+            <input
+              type="text"
+              name="name_project"
+              value={projectForm.name_project}
+              onChange={(e) =>
+                setProjectForm({ ...projectForm, name_project: e.target.value })
+              }
+              placeholder="Nama Project"
+              className="form-control mb-2"
+              required
+            />
+            <input
+              type="text"
+              name="link_web"
+              value={projectForm.link_web}
+              onChange={(e) =>
+                setProjectForm({ ...projectForm, link_web: e.target.value })
+              }
+              placeholder="Link Web"
+              className="form-control mb-2"
+            />
+            <textarea
+              name="deskripsi"
+              rows="3"
+              value={projectForm.deskripsi}
+              onChange={(e) =>
+                setProjectForm({ ...projectForm, deskripsi: e.target.value })
+              }
+              placeholder="Deskripsi"
+              className="form-control mb-2"
+              required
+            />
+            <input
+              type="text"
+              name="tools"
+              value={projectForm.tools}
+              onChange={(e) =>
+                setProjectForm({ ...projectForm, tools: e.target.value })
+              }
+              placeholder="Tools (pisahkan dengan koma)"
+              className="form-control mb-2"
+              required
+            />
+            <input
+              type="file"
+              className="form-control mb-3"
+              onChange={(e) =>
+                setProjectForm({ ...projectForm, foto: e.target.files[0] })
+              }
+            />
+            <button type="submit" className="btn btn-primary w-100">
+              Simpan
+            </button>
           </form>
         </ModalWrapper>
       )}

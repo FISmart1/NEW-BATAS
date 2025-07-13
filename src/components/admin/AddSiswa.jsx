@@ -19,6 +19,7 @@ function AddSiswa() {
     status: "", // ✅ TAMBAHKAN INI
     email: "",
     telepon: "",
+    hafalan: "",
   });
   const [files, setFiles] = useState({
     foto: null,
@@ -47,6 +48,7 @@ function AddSiswa() {
       skill: fd.skill,
       linkedin: fd.linkedin,
       status: fd.status, // ✅ TAMBAHKAN INI
+      hafalan: fd.hafalan,
     });
     setShowModal(true);
     setIsEdit(true); // TAMBAHKAN INI
@@ -55,7 +57,7 @@ function AddSiswa() {
   const handleDelete = async (id) => {
     if (window.confirm("Yakin ingin menghapus siswa ini?")) {
       try {
-        await axios.delete(`http://localhost:3006/api/siswa/${id}`);
+        await axios.delete(`http://10.255.255.13:3006/api/siswa/${id}`);
         alert("Data berhasil dihapus.");
         fetchSiswa();
       } catch (error) {
@@ -67,7 +69,7 @@ function AddSiswa() {
 
   /* ------------ fetch data ------------ */
   const fetchSiswa = async () => {
-    const res = await axios.get("http://localhost:3006/api/getsiswa");
+    const res = await axios.get("http://10.255.255.13:3006/api/getsiswa");
     setSiswaList(res.data || []);
   };
 
@@ -90,12 +92,12 @@ function AddSiswa() {
     try {
       if (isEdit) {
         await axios.put(
-          `http://localhost:3006/api/siswa/update/${formData.id}`,
+          `http://10.255.255.13:3006/api/siswa/update/${formData.id}`,
           fd
         );
         alert("Data siswa berhasil diperbarui.");
       } else {
-        await axios.post("http://localhost:3006/api/siswa", fd);
+        await axios.post("http://10.255.255.13:3006/api/siswa", fd);
         alert("Siswa ditambahkan!");
       }
 
@@ -116,6 +118,7 @@ function AddSiswa() {
         status: "",
         email: "",
         telepon: "",
+        hafalan: "",
       });
       setFiles({ foto: null, portofolio_foto: null, cv: null });
       setIsEdit(false); // RESET
@@ -157,6 +160,7 @@ function AddSiswa() {
               status: "",
               email: "",
               telepon: "",
+              hafalan: "",
             });
             setFiles({ foto: null, portofolio_foto: null, cv: null });
           }}
@@ -175,6 +179,7 @@ function AddSiswa() {
               <th style={{ width: "20%" }}>Keahlian</th>
               <th style={{ width: "10%" }}>Skill</th>
               <th style={{ width: "10%" }}>Linkedin</th>
+              <th style={{ width: "10%" }}>Hafalan</th>
               <th style={{ width: "10%" }}>Portofolio</th>
               <th style={{ width: "15%" }}>Profil</th>
               <th style={{ width: "15%" }}>Aksi</th> {/* Kolom Aksi */}
@@ -199,6 +204,7 @@ function AddSiswa() {
                     </a>
                   )}
                 </td>
+                <td>{s.hafalan}</td>
                 <td>
                   {s.link_porto && (
                     <a
@@ -306,8 +312,10 @@ function AddSiswa() {
               <option value="Data Scientist">Data Scientist</option>
               <option value="Machine Learning Engineer">Machine Learning Engineer</option>
               <option value="Network Engineer">Network Engineer</option>
+              <option value="Cyber Security">Cyber Security</option>
               <option value="IT Support">IT Support</option>
               <option value="IT Support Assistant">IT Support Assistant</option>
+              <option value="IT Support Assistant">IOT Engineer</option>
             </select>
             <input
               name="skill"
@@ -385,6 +393,44 @@ function AddSiswa() {
               <option value="">Pilih Status</option>
               <option value="siswa">Siswa</option>
               <option value="alumni">Alumni</option>
+            </select>
+            <select
+              name="hafalan"
+              value={formData.hafalan}
+              onChange={handleChange}
+              className="form-select mb-3"
+            >
+              <option value="">Pilih Hafalan</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+              <option value="13">13</option>
+              <option value="14">14</option>
+              <option value="15">15</option>
+              <option value="16">16</option>
+              <option value="17">17</option>
+              <option value="18">18</option>
+              <option value="19">19</option>
+              <option value="20">20</option>
+              <option value="21">21</option>
+              <option value="22">22</option>
+              <option value="23">23</option>
+              <option value="24">24</option>
+              <option value="25">25</option>
+              <option value="26">26</option>
+              <option value="27">27</option>
+              <option value="28">28</option>
+              <option value="29">29</option>
+              <option value="30">30</option>
             </select>
           </div>
         </div>
