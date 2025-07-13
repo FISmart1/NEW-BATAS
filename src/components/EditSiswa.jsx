@@ -61,7 +61,7 @@ const EditSiswa = () => {
 
   useEffect(() => {
     axios
-      .get(`http://10.255.255.13:3006/api/siswa/${id}`)
+      .get(`https://backend_best.smktibazma.com/api/siswa/${id}`)
       .then((res) => {
         setSiswa(res.data.siswa);
         setProjects(res.data.projects);
@@ -96,7 +96,7 @@ const EditSiswa = () => {
       if (fotoFile) fd.append("foto", fotoFile);
       if (formData.cv) fd.append("cv", formData.cv);
 
-      await axios.put(`http://10.255.255.13:3006/api/siswa/update/${id}`, fd);
+      await axios.put(`https://backend_best.smktibazma.com/api/siswa/update/${id}`, fd);
       alert("Data diperbarui!");
       closeModal();
     } catch (err) {
@@ -112,7 +112,7 @@ const EditSiswa = () => {
     fd.append("db_siswa_id", siswa.id);
     try {
       await axios.post("api/pengalaman/", fd);
-      const res = await axios.get(`http://10.255.255.13:3006/api/siswa/${id}`);
+      const res = await axios.get(`https://backend_best.smktibazma.com/api/siswa/${id}`);
       setPengalaman(res.data.pengalaman);
       alert("Pengalaman ditambahkan!");
       closeModal();
@@ -129,8 +129,8 @@ const EditSiswa = () => {
     Object.entries(projectForm).forEach(([key, val]) => fd.append(key, val));
     fd.append("db_siswa_id", siswa.id);
     try {
-      await axios.post("http://10.255.255.13:3006/api/project/upload", fd);
-      const res = await axios.get(`http://10.255.255.13:3006/api/siswa/${id}`);
+      await axios.post("https://backend_best.smktibazma.com/api/project/upload", fd);
+      const res = await axios.get(`https://backend_best.smktibazma.com/api/siswa/${id}`);
       setProjects(res.data.projects);
       alert("Project ditambahkan!");
       closeModal();
@@ -153,7 +153,7 @@ const EditSiswa = () => {
       >
         <div className="d-flex gap-4 align-items-center">
           <img
-            src={`http://10.255.255.13:3006/uploads/${siswa.foto}`}
+            src={`https://backend_best.smktibazma.com/uploads/${siswa.foto}`}
             alt={siswa.name}
             className="rounded-circle border border-white"
             style={{ width: 200, height: 200, objectFit: "cover" }}

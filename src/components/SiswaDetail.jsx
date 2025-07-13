@@ -17,11 +17,11 @@ function SiswaDetail() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [expandedExperiences, setExpandedExperiences] = useState({});
 
-  const baseImageUrl = "http://10.255.255.13:3006/uploads/";
+  const baseImageUrl = "https://backend_best.smktibazma.com/uploads/";
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`http://10.255.255.13:3006/api/siswa/${id}`);
+      const res = await axios.get(`https://backend_best.smktibazma.com/api/siswa/${id}`);
       setSiswa(res.data.siswa);
       setProjects(res.data.projects);
       setPengalaman(res.data.pengalaman);

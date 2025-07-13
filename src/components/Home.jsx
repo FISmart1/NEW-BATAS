@@ -45,7 +45,7 @@ function Home() {
 
   const nonPelajarScrollRef = useRef(null);
   const mitraRef = useRef(null);
-  const imageBaseUrl = "http://10.255.255.13:3006/uploads/";
+  const imageBaseUrl = "https://backend_best.smktibazma.com/uploads/";
   const logos = [
     yakes,
     ptn,
@@ -114,8 +114,8 @@ function Home() {
     const fetchData = async () => {
       try {
         const [siswaRes, projectsRes] = await Promise.all([
-          axios.get("http://10.255.255.13:3006/api/getsiswa"),
-          axios.get("http://10.255.255.13:3006/api/projects"),
+          axios.get("https://backend_best.smktibazma.com/api/getsiswa"),
+          axios.get("https://backend_best.smktibazma.com/api/projects"),
         ]);
 
         const siswaData = siswaRes.data.filter((s) => s.status === "alumni");

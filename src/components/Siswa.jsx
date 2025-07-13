@@ -34,7 +34,7 @@ function SiswaByAngkatan() {
   });
   
   const angkatanList = [1, 2, 3, 4, 5];
-  const baseImageUrl = "http://10.255.255.13:3006/uploads/";
+  const baseImageUrl = "https://backend_best.smktibazma.com/uploads/";
   const cardRefs = useRef([]);
 
   // Fetch student data
@@ -42,7 +42,7 @@ function SiswaByAngkatan() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("http://10.255.255.13:3006/api/getsiswa");
+        const response = await axios.get("https://backend_best.smktibazma.com/api/getsiswa");
         const sortedData = response.data.sort((a, b) => {
           if (a.angkatan !== b.angkatan) return a.angkatan - b.angkatan;
           return a.name.localeCompare(b.name, "id", { sensitivity: "base" });

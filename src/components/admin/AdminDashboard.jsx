@@ -9,10 +9,10 @@ function AdminDashboard() {
   const [totalProject, setTotalProject] = useState(0);
 
   useEffect(() => {
-    axios.get("http://10.255.255.13:3006/api/getsiswa").then((res) => {
+    axios.get("https://backend_best.smktibazma.com/api/getsiswa").then((res) => {
       setTotalSiswa(res.data.length);
     });
-    axios.get("http://10.255.255.13:3006/api/projects").then((res) => {
+    axios.get("https://backend_best.smktibazma.com/api/projects").then((res) => {
       setTotalProject(res.data.length);
     });
   }, []);

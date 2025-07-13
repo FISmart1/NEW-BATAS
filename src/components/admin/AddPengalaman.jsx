@@ -23,12 +23,12 @@ function AddPengalaman() {
   }, []);
 
   const fetchSiswa = async () => {
-    const res = await axios.get("http://10.255.255.13:3006/api/getsiswa");
+    const res = await axios.get("https://backend_best.smktibazma.com/api/getsiswa");
     setSiswaList(res.data || []);
   };
 
   const fetchData = async () => {
-    const res = await axios.get("http://10.255.255.13:3006/api/pengalaman");
+    const res = await axios.get("https://backend_best.smktibazma.com/api/pengalaman");
     setList(res.data || []);
   };
 
@@ -46,14 +46,14 @@ function AddPengalaman() {
     try {
       if (isEdit) {
         await axios.put(
-          `http://10.255.255.13:3006/api/editpengalaman/${formData.id}`,
+          `https://backend_best.smktibazma.com/api/editpengalaman/${formData.id}`,
           data
         );
         alert("Pengalaman diperbarui");
       } else {
         const id = crypto.randomUUID(); // native UUID
         data.set("id", id);
-        await axios.post("http://10.255.255.13:3006/api/pengalaman", data);
+        await axios.post("https://backend_best.smktibazma.com/api/pengalaman", data);
         alert("Pengalaman ditambahkan");
       }
 
@@ -82,7 +82,7 @@ function AddPengalaman() {
   const handleDelete = async (id) => {
     if (window.confirm("Yakin ingin menghapus pengalaman ini?")) {
       try {
-        await axios.delete(`http://10.255.255.13:3006/api/pengalaman/${id}`);
+        await axios.delete(`https://backend_best.smktibazma.com/api/pengalaman/${id}`);
         fetchData();
         alert("Data dihapus");
       } catch (err) {
