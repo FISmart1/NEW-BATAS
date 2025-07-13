@@ -77,7 +77,7 @@ export default function App() {
   const handleLogin = async () => {
     try {
       console.log("🟡 Mulai proses login...");
-      const res = await axios.post("http://localhost:3006/api/login", {
+      const res = await axios.post("https://backend_best.smktibazma.com/api/login", {
         nis,
         password,
       });
