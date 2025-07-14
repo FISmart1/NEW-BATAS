@@ -143,10 +143,10 @@ export default function App() {
               <div className="collapse navbar-collapse justify-content-end d-none d-lg-flex">
                 <div className="navbar-nav d-flex gap-4 align-items-center">
                   <Link to="/home" className="nav-link text-dark">
-                    Home
+                    Beranda
                   </Link>
                   <Link to="/angkatan" className="nav-link text-dark">
-                    Student
+                    Cari talenta
                   </Link>
                   {user ? (
                     <div className="position-relative d-flex align-items-center">
@@ -419,13 +419,13 @@ export default function App() {
                     to="/home"
                     className="text-white text-decoration-none mb-1"
                   >
-                    Home
+                    Beranda
                   </Link>
                   <Link
                     to="/angkatan"
                     className="text-white text-decoration-none mb-1"
                   >
-                    Student
+                    Siswa atau Alumni
                   </Link>
                   <Link
                     to="/angkatan"
@@ -450,13 +450,13 @@ export default function App() {
                     to="https://smktibazma.com"
                     className="text-white text-decoration-none mb-1"
                   >
-                    SAS
+                    Website Sekolah
                   </Link>
                   <Link
                     to="https://jurnal.smktibazma.com"
                     className="text-white text-decoration-none"
                   >
-                    Jurnal
+                    Jurnal PKL
                   </Link>
                 </div>
               </div>

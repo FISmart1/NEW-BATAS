@@ -162,7 +162,7 @@ function SiswaByAngkatan() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="display-5 fw-bold mb-3">Temukan Portofolio Siswa/alumni</h1>
+        <h1 className="display-5 fw-bold mb-3">Temukan Portofolio Alumni atau Siswa</h1>
         <p className="lead mb-4">
           Jelajahi talenta-talenta terbaik dari berbagai keahlian dan latar belakang.
         </p>

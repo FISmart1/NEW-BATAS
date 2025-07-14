@@ -322,9 +322,11 @@ function Home() {
                 mereka.
               </p>
               <p className="text-justify">
-                BEST adalah platform untuk menampilkan portofolio siswa/alumni SMK.
-                Siswa/alumni dapat membagikan proyek mereka secara online dan
-                masyarakat bisa mengakses informasi tersebut dengan mudah.
+                BEST adalah platform digital yang memudahkan alumni dan siswa
+                SMK TI BAZMA untuk menampilkan portofolio mereka secara online.
+                Karya-karya terbaik mereka kini bisa diakses dengan mudah oleh
+                publik, industri, dan pihak yang ingin mengenal lebih dekat
+                potensi generasi muda.
               </p>
               <div className="d-flex flex-wrap gap-2 mt-3">
                 <span className="badge bg-light text-dark">Web Developer</span>
@@ -337,7 +339,7 @@ function Home() {
                 className="btn text-black mt-4"
                 style={{ backgroundColor: "white" }}
               >
-                Lihat Siswa/Alumni
+                Lihat Alumni dan Siswa
               </Link>
             </div>
             <div className="col-12 col-md-6 d-flex justify-content-center">
@@ -368,7 +370,12 @@ function Home() {
             Jejak Alumni
           </h2>
           <p className="text-center mb-4 text-black col-12 col-md-10 ">
-            Profil alumni berikut mencerminkan bahwa lulusan SMK TI BAZMA telah menempuh proses pembelajaran yang membekali mereka dengan keterampilan dan sikap kerja yang selaras dengan kebutuhan dunia profesional. Kehadiran mereka di berbagai bidang menjadi bagian dari kontribusi kecil yang terus bertumbuh, seiring dengan perjalanan belajar yang tidak berhenti setelah masa sekolah berakhir.
+            Profil alumni berikut mencerminkan bahwa lulusan SMK TI BAZMA telah
+            menempuh proses pembelajaran yang membekali mereka dengan
+            keterampilan dan sikap kerja yang selaras dengan kebutuhan dunia
+            profesional. Kehadiran mereka di berbagai bidang menjadi bagian dari
+            kontribusi kecil yang terus bertumbuh, seiring dengan perjalanan
+            belajar yang tidak berhenti setelah masa sekolah berakhir.
           </p>
         </div>
 
@@ -559,8 +566,8 @@ function Home() {
             Temukan Talenta Terbaik
           </h2>
           <p className="text-muted text-center">
-            Jelajahi profil siswa/alumni berbakat dari SMK TI BAZMA dan temukan
-            kolaborator terbaik untuk proyek anda.
+            Jelajahi profil alumni dan siswa berbakat dari SMK TI BAZMA dan
+            temukan kolaborator terbaik untuk proyek anda.
           </p>
         </div>
 
@@ -700,13 +707,14 @@ function Home() {
               ))
             ) : (
               <div className="text-center text-muted mt-4">
-                <p>❌ Tidak ada siswa/alumni yang cocok dengan filter.</p>
+                <p>❌ Tidak ada data alumni dan siswa yang cocok dengan filter.</p>
               </div>
             )
           ) : (
             <div className="text-center text-muted mt-4">
               <p>
-                🔍 Gunakan filter di atas untuk mulai menelusuri data siswa/alumni.
+                🔍 Gunakan filter di atas untuk mulai menelusuri data
+                alumni dan siswa.
               </p>
             </div>
           )}
@@ -725,12 +733,12 @@ function Home() {
         <div className="container text-white">
           <div className="row align-items-center text-justify gap-">
             <div className="col-md-5">
-              <h1 className="fw-bold mb-3">Project Siswa/Alumni</h1>
+              <h1 className="fw-bold mb-3">Jejak Karya</h1>
               <p>
                 Di balik setiap proyek, ada semangat belajar, kerja keras, dan
-                inovasi. Proyek-proyek ini adalah bukti bahwa siswa/alumni SMK TI BAZMA
-                mampu menciptakan teknologi yang bermanfaat dan siap bersaing di
-                dunia industri maupun masyarakat.
+                inovasi. Proyek-proyek ini adalah bukti bahwa alumni dan siswa SMK
+                TI BAZMA mampu menciptakan teknologi yang bermanfaat dan siap
+                bersaing di dunia industri maupun masyarakat.
               </p>
               <ul>
                 <li>SISMAKO (Sistem Managament Sekolah)</li>
@@ -890,11 +898,13 @@ function Home() {
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
-          <div className="text-center text-md-start mb-4 mb-md-0">
+        <div className="d-flex flex-column flex-md-row justify-content-center align-items-center mb-5">
+          <div className="text-center mb-4 mb-md-0">
             <h2 className="fw-bold mb-2">Kata Mereka</h2>
             <p className="text-muted">
-              Trusted by professionals and organizations
+              Komentar mereka menyadarkan kami: bahwa karya kecil sekalipun bisa
+              membawa dampak besar. Ini bukan akhir—justru awal untuk mencipta
+              yang lebih berarti.
             </p>
           </div>
           {/*<button
