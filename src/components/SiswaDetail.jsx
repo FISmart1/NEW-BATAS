@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import html2canvas from "html2canvas";
 import html2pdf from "html2pdf.js";
@@ -21,7 +21,9 @@ function SiswaDetail() {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get(`https://backend_best.smktibazma.com/api/siswa/${id}`);
+      const res = await axios.get(
+        `https://backend_best.smktibazma.com/api/siswa/${id}`
+      );
       setSiswa(res.data.siswa);
       setProjects(res.data.projects);
       setPengalaman(res.data.pengalaman);
@@ -36,35 +38,15 @@ function SiswaDetail() {
   const toggleExperience = (id) => {
     setExpandedExperiences((prev) => ({
       ...prev,
-      [id]: !prev[id]
+      [id]: !prev[id],
     }));
-  };
-
-  const convertImgToBase64 = async (url) => {
-    try {
-      const response = await fetch(url);
-      const blob = await response.blob();
-      return new Promise((resolve) => {
-        const reader = new FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-      });
-    } catch (error) {
-      console.error("Error converting image to base64:", error);
-      return url; // Fallback to original URL if conversion fails
-    }
   };
 
   const downloadPDF = async () => {
     if (!siswa) return;
-    
+
     try {
       const el = document.getElementById("profile-section");
-      const img = el.querySelector("img");
-      if (img) {
-        img.src = await convertImgToBase64(img.src);
-      }
-
       const options = {
         margin: 0.5,
         filename: `${siswa.name}-profile.pdf`,
@@ -72,26 +54,27 @@ function SiswaDetail() {
         html2canvas: { scale: 2 },
         jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
       };
-
       await html2pdf().from(el).set(options).save();
     } catch (error) {
       console.error("Error generating PDF:", error);
-      alert("Gagal mengunduh PDF. Silakan coba lagi.");
+      alert("Failed to download PDF. Please try again.");
     }
   };
 
   const downloadPNG = async () => {
     if (!siswa) return;
-    
+
     try {
-      const canvas = await html2canvas(document.getElementById("profile-section"));
+      const canvas = await html2canvas(
+        document.getElementById("profile-section")
+      );
       const link = document.createElement("a");
       link.download = `${siswa.name}-profile.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
     } catch (error) {
       console.error("Error generating PNG:", error);
-      alert("Gagal mengunduh PNG. Silakan coba lagi.");
+      alert("Failed to download PNG. Please try again.");
     }
   };
 
@@ -111,7 +94,7 @@ function SiswaDetail() {
 
   if (loading) {
     return (
-      <div className="d-flex justify-content-center align-items-center" style={{ height: "50vh" }}>
+      <div className="d-flex justify-content-center align-items-center min-vh-50">
         <div className="spinner-border text-primary" role="status">
           <span className="visually-hidden">Loading...</span>
         </div>
@@ -122,12 +105,9 @@ function SiswaDetail() {
   if (!siswa) {
     return (
       <div className="container py-5 text-center">
-        <h4>Data siswa tidak ditemukan</h4>
-        <button 
-          className="btn btn-primary mt-3"
-          onClick={() => navigate("/")}
-        >
-          Kembali ke Beranda
+        <h4>Student data not found</h4>
+        <button className="btn btn-primary mt-3" onClick={() => navigate("/")}>
+          Back to Home
         </button>
       </div>
     );
@@ -136,280 +116,401 @@ function SiswaDetail() {
   const carouselResponsive = {
     superLargeDesktop: {
       breakpoint: { max: 4000, min: 1200 },
-      items: 3
+      items: 3,
     },
     desktop: {
       breakpoint: { max: 1200, min: 992 },
-      items: 2
+      items: 2,
     },
     tablet: {
       breakpoint: { max: 992, min: 768 },
-      items: 1
+      items: 1,
     },
     mobile: {
       breakpoint: { max: 768, min: 0 },
-      items: 1
-    }
+      items: 1,
+    },
   };
 
   return (
     <div className="container py-5">
-      {/* Profile Section */}
+      {/* Main Profile Card */}
       <div
-        className="card border-0 rounded-4 p-4"
+        className="card border-0 shadow-lg rounded-4 overflow-hidden"
         id="profile-section"
-        style={{ color: "#12294A" }}
       >
         {/* Profile Header */}
-        <div className="row align-items-center mb-4 border rounded-3 p-3 gx-3 gy-4">
-          <div className="col-md-8 col-12">
-            <h3 className="fw-bold text-dark">{siswa.name}</h3>
-            <p className="text-dark mb-0">
-              {siswa.posisi} - {siswa.instansi}
-            </p>
-            <p className="text-dark mb-0">Alamat : {siswa.alamat}</p>
-            <p className="text-dark mt-0">Jumlah hafalan : {siswa.hafalan}</p>
-            
-            {/* Download Buttons */}
-            <div className="d-flex flex-wrap gap-2">
-              <button 
-                onClick={downloadPDF} 
-                className="btn btn-dark"
-                aria-label="Download as PDF"
-              >
-                <i className="bi bi-file-earmark-pdf"></i> PDF
-              </button>
-              <button 
-                onClick={downloadPNG} 
-                className="btn btn-dark"
-                aria-label="Download as PNG"
-              >
-                Portofolio <i className="bi bi-box-arrow-up-right"></i>
-              </button>
-            </div>
-            
-            {/* Contact Info */}
-            <div className="d-flex flex-column gap-2 mt-3">
-              {siswa.email && (
-                <div className="d-flex align-items-center gap-2">
-                  <i className="bi bi-envelope-fill text-primary"></i>
+        <div className="bg-custom bg-opacity-10 p-4 p-md-5">
+          <div className="row align-items-center">
+            <div className="col-md-8">
+              <h1 className=" fw-bold text-white mb-3">{siswa.name}</h1>
+              <div className="d-flex flex-wrap gap-3 mb-3">
+                <span className="badge bg-white text-black px-3 py-2">
+                  <i className="bi bi-briefcase me-2"></i>
+                  {siswa.posisi}
+                </span>
+                <span className="badge bg-white text-black px-3 py-2">
+                  <i className="bi bi-building me-2"></i>
+                  {siswa.instansi}
+                </span>
+              </div>
+
+              <div className="d-flex flex-wrap gap-3 mb-4">
+                {siswa.cv && (
                   <a
-                    href={`mailto:${siswa.email}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-decoration-none text-dark text-truncate"
+                    href={`https://backend_best.smktibazma.com/uploads/${siswa.cv}`}
+                    download
+                    className="btn btn-dark px-4"
                   >
-                    {siswa.email}
+                    <i className="bi bi-file-earmark-pdf me-2"></i> Download CV
                   </a>
+                )}
+
+                {siswa.link_porto && (
+                  <a
+                    href={
+                      siswa.link_porto.startsWith("http")
+                        ? siswa.link_porto
+                        : `https://backend_best.smktibazma.com/uploads/${siswa.link_porto}`
+                    }
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-outline-dark px-4"
+                  >
+                    <i className="bi bi-image me-2"></i> Portofolio
+                  </a>
+                )}
+              </div>
+            </div>
+
+            <div className="col-md-4 text-center">
+              <div className="position-relative d-inline-block">
+                <img
+                  src={`${baseImageUrl}${siswa.foto}`}
+                  alt={`${siswa.name}'s profile`}
+                  className="rounded-circle img-thumbnail shadow-sm"
+                  style={{
+                    width: "200px",
+                    height: "200px",
+                    objectFit: "cover",
+                  }}
+                />
+                <div className="position-absolute bottom-0 end-0 bg-white rounded-circle p-2 shadow-sm">
+                  <i className="bi bi-check-circle-fill text-success fs-4"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Profile Content */}
+        <div className="p-4 p-md-5">
+          {/* About Section */}
+          <section className="mb-5">
+            <h3 className="fw-bold mb-4 text-custom">
+              <i className="bi bi-person-lines-fill me-2 "></i> About Me
+            </h3>
+            <div className=" p-4 rounded-3">
+              <p className=" mb-0" style={{ whiteSpace: "pre-line" }}>
+                {siswa.deskripsi || "No description available."}
+              </p>
+            </div>
+          </section>
+
+          {/* Contact Info */}
+          <section className="mb-5">
+            <h3 className="fw-bold mb-4 text-custom">
+              <i className="bi bi-envelope-at-fill me-2"></i> Contact
+            </h3>
+            <div className="row g-3 text-custom">
+              {siswa.email && (
+                <div className="col-md-6">
+                  <div className="p-3 border rounded-3 h-100">
+                    <div className="d-flex align-items-center">
+                      <div className="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                        <i className="bi bi-envelope-fill"></i>
+                      </div>
+                      <div>
+                        <h6 className="mb-1 ">Email</h6>
+                        <a
+                          href={`mailto:${siswa.email}`}
+                          className="text-decoration-none text-custom"
+                        >
+                          {siswa.email}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
               {siswa.telepon && (
-                <div className="d-flex align-items-center gap-2">
-                  <i className="bi bi-telephone-fill text-success"></i>
-                  <a
-                    href={`https://wa.me/${siswa.telepon}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="text-decoration-none text-dark"
-                  >
-                    {siswa.telepon}
-                  </a>
+                <div className="col-md-6">
+                  <div className="p-3 border rounded-3 h-100">
+                    <div className="d-flex align-items-center">
+                      <div className="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                        <i className="bi bi-whatsapp"></i>
+                      </div>
+                      <div>
+                        <h6 className="mb-1">WhatsApp</h6>
+                        <a
+                          href={`https://wa.me/${siswa.telepon}`}
+                          className="text-decoration-none text-custom"
+                        >
+                          {siswa.telepon}
+                        </a>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               )}
+              <div className="col-12">
+                <div className="p-3 border rounded-3">
+                  <div className="d-flex align-items-center">
+                    <div className="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                      <i className="bi bi-geo-alt-fill"></i>
+                    </div>
+                    <div>
+                      <h6 className="mb-1">Address</h6>
+                      <p className="mb-0">{siswa.alamat}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-          </div>
-          
-          {/* Profile Image */}
-          <div className="col-md-4 col-12 text-center">
-            <img
-              src={`${baseImageUrl}${siswa.foto}`}
-              alt={`Profil ${siswa.name}`}
-              className="rounded-circle img-fluid"
-              style={{ 
-                width: "200px", 
-                height: "200px", 
-                objectFit: "cover" 
-              }}
-            />
-          </div>
-        </div>
+          </section>
 
-        {/* About Section */}
-        <div className="mb-4 border row p-4 rounded-3 gx-3">
-          <h5 className="fw-bold mb-3">Tentang Saya</h5>
-          <p style={{ whiteSpace: "pre-line" }}>
-            {siswa.deskripsi || "Belum ada deskripsi."}
-          </p>
-        </div>
+          {/* Skills Section */}
+          <section className="mb-5">
+            <h3 className="fw-bold mb-4 text-custom">
+              <i className="bi bi-tools me-2"></i> Skills
+            </h3>
+            <div className="d-flex flex-wrap gap-2">
+              {siswa.skill ? (
+                siswa.skill.split(",").map((s, i) => (
+                  <span
+                    key={i}
+                    className="badge bg-custom bg-opacity-25 text-white py-2 px-3 fs-6"
+                  >
+                    {s.trim()}
+                  </span>
+                ))
+              ) : (
+                <p className="text-muted">No skills listed</p>
+              )}
+            </div>
+          </section>
 
-        {/* Skills Section */}
-        <div className="mb-4">
-          <h5 className="fw-bold mb-3 text-dark">Keahlian</h5>
-          <div className="d-flex flex-wrap gap-2">
-            {siswa.skill ? (
-              siswa.skill.split(",").map((s, i) => (
-                <span
-                  key={i}
-                  className="badge text-white p-2"
-                  style={{ backgroundColor: "#12294A" }}
-                >
-                  {s.trim()}
-                </span>
-              ))
-            ) : (
-              <span className="text-muted">Belum ada skill</span>
-            )}
-          </div>
-        </div>
+          {/* Projects Section */}
+          <section className="mb-5">
+            <div className="d-flex justify-content-between align-items-center mb-4">
+              <h3 className="fw-bold text-custom">
+                <i className="bi bi-folder-fill me-2"></i> Projects
+              </h3>
+              <span className="badge bg-custom rounded-pill px-3 py-2">
+                {projects.length} projects
+              </span>
+            </div>
 
-        {/* Projects Section */}
-        <div className="mb-5">
-          <h3 className="fw-bold mb-4 text-black">Proyek</h3>
-          {projects.length > 0 ? (
-            <Carousel
-              responsive={carouselResponsive}
-              itemClass="px-2"
-              containerClass="px-0 py-3"
-              arrows
-              infinite={false}
-              autoPlay={false}
-              keyBoardControl
-            >
-              {projects.map((p) => {
-                const shortDesc = p.deskripsi.length > 80 
-                  ? `${p.deskripsi.substring(0, 80)}...` 
-                  : p.deskripsi;
-                
-                return (
-                  <div key={p.id} className="h-100">
-                    <div className="card shadow-sm border-0 rounded overflow-hidden h-100">
-                      {p.foto && (
-                        <div className="overflow-hidden" style={{ height: "200px" }}>
-                          <img
-                            src={`${baseImageUrl}${p.foto}`}
-                            alt={p.name_project}
-                            className="w-100 h-100"
-                            style={{ objectFit: "cover" }}
-                          />
-                        </div>
-                      )}
-                      <div className="card-body d-flex flex-column">
-                        <div>
-                          <h6 className="fw-bold text-dark">{p.name_project}</h6>
-                          <p className="text-muted small text-justify">
+            {projects.length > 0 ? (
+              <Carousel
+                responsive={carouselResponsive}
+                itemClass="px-2"
+                containerClass="px-0 py-3"
+                arrows
+                infinite={false}
+                autoPlay={false}
+                keyBoardControl
+              >
+                {projects.map((p) => {
+                  const shortDesc =
+                    p.deskripsi.length > 100
+                      ? `${p.deskripsi.substring(0, 100)}...`
+                      : p.deskripsi;
+
+                  return (
+                    <div key={p.id} className="h-100">
+                      <div className="card border-0 shadow-sm h-100">
+                        {p.foto && (
+                          <div
+                            className="overflow-hidden"
+                            style={{ height: "180px" }}
+                          >
+                            <img
+                              src={`${baseImageUrl}${p.foto}`}
+                              alt={p.name_project}
+                              className="w-100 h-100 object-fit-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="card-body d-flex flex-column">
+                          <h5 className="card-title fw-bold">
+                            {p.name_project}
+                          </h5>
+                          <p className="card-text text-muted mb-3">
                             {shortDesc}
-                            {p.deskripsi.length > 80 && (
-                              <span 
-                                className="text-primary ms-1" 
-                                role="button" 
+                            {p.deskripsi.length > 100 && (
+                              <span
+                                className="text-primary ms-1 cursor-pointer"
                                 onClick={() => handleShowMore(p)}
-                                aria-label="Baca selengkapnya"
                               >
-                                selengkapnya →
+                                Read more →
                               </span>
                             )}
                           </p>
                           {p.tools && (
-                            <div className="d-flex flex-wrap gap-2">
-                              {p.tools.split(",").map((tool, index) => (
-                                <span
-                                  key={index}
-                                  className="badge text-white"
-                                  style={{ backgroundColor: "#12294A" }}
+                            <div className="mt-auto">
+                              <div className="d-flex flex-wrap gap-2 mb-3">
+                                {p.tools.split(",").map((tool, index) => (
+                                  <span
+                                    key={index}
+                                    className="badge bg-secondary bg-opacity-10 text-secondary"
+                                  >
+                                    {tool.trim()}
+                                  </span>
+                                ))}
+                              </div>
+                              {p.link_web && (
+                                <a
+                                  href={p.link_web}
+                                  className="btn btn-outline-primary w-100"
+                                  target="_blank"
+                                  rel="noreferrer"
                                 >
-                                  {tool.trim()}
-                                </span>
-                              ))}
+                                  View Project{" "}
+                                  <i className="bi bi-box-arrow-up-right ms-2"></i>
+                                </a>
+                              )}
                             </div>
                           )}
                         </div>
-                        {p.link_web && (
-                          <a 
-                            href={p.link_web} 
-                            className="btn btn-dark mt-2" 
-                            target="_blank" 
-                            rel="noreferrer"
-                            aria-label="Lihat proyek"
-                          >
-                            Lihat Project <i className="bi bi-box-arrow-up-right"></i>
-                          </a>
-                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </Carousel>
+            ) : (
+              <div className="text-center py-5 bg-light rounded-3">
+                <i className="bi bi-folder-x text-muted fs-1 mb-3"></i>
+                <h5 className="text-muted">No projects available</h5>
+              </div>
+            )}
+          </section>
+
+          {/* Experience Section */}
+          <section className="mb-4">
+            <h3 className="fw-bold mb-4 text-custom">
+              <i className="bi bi-award-fill me-2"></i> Experience
+            </h3>
+
+            {pengalaman.length > 0 ? (
+              <div className="row g-4">
+                {pengalaman.map((e) => (
+                  <div key={e.id} className="col-md-6">
+                    <div className="card border-0 shadow-sm h-100">
+                      <div className="card-body">
+                        <div className="d-flex align-items-start mb-3">
+                          <div className="bg-primary bg-opacity-10 text-birutua rounded-circle p-3 me-3">
+                            <i className="bi bi-briefcase-fill"></i>
+                          </div>
+                          <div>
+                            <h5 className="card-title fw-bold mb-1">
+                              {e.name}
+                            </h5>
+                            <p className="text-muted mb-2">
+                              <i className="bi bi-geo-alt-fill me-1"></i>{" "}
+                              {e.lokasi}
+                            </p>
+                          </div>
+                        </div>
+                        <p className="card-text">
+                          {expandedExperiences[e.id]
+                            ? e.deskripsi
+                            : `${e.deskripsi.slice(0, 150)}${
+                                e.deskripsi.length > 150 ? "..." : ""
+                              }`}
+                          {e.deskripsi.length > 150 && (
+                            <span
+                              className="ms-2 text-primary cursor-pointer"
+                              onClick={() => toggleExperience(e.id)}
+                            >
+                              {expandedExperiences[e.id]
+                                ? "Show less"
+                                : "Show more"}
+                            </span>
+                          )}
+                        </p>
                       </div>
                     </div>
                   </div>
-                );
-              })}
-            </Carousel>
-          ) : (
-            <p className="text-muted">Belum ada proyek.</p>
-          )}
-        </div>
-
-        {/* Experience Section */}
-        <div className="mb-4 text-dark">
-          <h3 className="fw-bold mb-4">Pengalaman</h3>
-          {pengalaman.length > 0 ? (
-            pengalaman.map((e) => (
-              <div key={e.id} className="mb-3 p-3 border-start border-dark">
-                <h6 className="fw-bold">{e.name}</h6>
-                <p className="mb-1">Lokasi: {e.lokasi}</p>
-                <p style={{ fontSize: "14px" }}>
-                  {expandedExperiences[e.id]
-                    ? e.deskripsi
-                    : `${e.deskripsi.slice(0, 100)}${e.deskripsi.length > 100 ? "..." : ""}`}
-                  {e.deskripsi.length > 100 && (
-                    <span
-                      role="button"
-                      className="ms-2 text-primary"
-                      onClick={() => toggleExperience(e.id)}
-                      aria-label={expandedExperiences[e.id] ? "Sembunyikan" : "Tampilkan lebih banyak"}
-                    >
-                      {expandedExperiences[e.id] ? "Sembunyikan" : "Tampilkan lebih banyak"}
-                    </span>
-                  )}
-                </p>
+                ))}
               </div>
-            ))
-          ) : (
-            <p className="text-muted">Belum ada pengalaman.</p>
-          )}
+            ) : (
+              <div className="text-center py-5 bg-light rounded-3">
+                <i className="bi bi-award text-muted fs-1 mb-3"></i>
+                <h5 className="text-muted">No experience listed</h5>
+              </div>
+            )}
+          </section>
         </div>
       </div>
 
       {/* Project Modal */}
       {showModal && selectedProject && (
-        <div 
-          className="modal fade show d-block" 
-          tabIndex="-1" 
-          role="dialog"
+        <div
+          className="modal fade show d-block"
           style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
         >
-          <div className="modal-dialog modal-lg">
+          <div className="modal-dialog modal-lg modal-dialog-centered">
             <div className="modal-content">
-              <div className="modal-header">
+              <div className="modal-header bg-primary text-white">
                 <h5 className="modal-title">{selectedProject.name_project}</h5>
-                <button 
-                  className="btn-close" 
+                <button
+                  className="btn-close btn-close-white"
                   onClick={handleCloseModal}
-                  aria-label="Tutup"
                 ></button>
               </div>
               <div className="modal-body">
                 {selectedProject.foto && (
                   <img
                     src={`${baseImageUrl}${selectedProject.foto}`}
-                    className="img-fluid mb-3"
+                    className="img-fluid rounded-3 mb-4"
                     alt={selectedProject.name_project}
                   />
                 )}
-                <p>{selectedProject.deskripsi}</p>
+                <p className="lead">{selectedProject.deskripsi}</p>
+                {selectedProject.tools && (
+                  <div className="mb-4">
+                    <h6>Tools Used:</h6>
+                    <div className="d-flex flex-wrap gap-2">
+                      {selectedProject.tools.split(",").map((tool, index) => (
+                        <span
+                          key={index}
+                          className="badge bg-primary bg-opacity-10 text-primary py-2 px-3"
+                        >
+                          {tool.trim()}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                {selectedProject.link_web && (
+                  <a
+                    href={selectedProject.link_web}
+                    className="btn btn-primary"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    Visit Project{" "}
+                    <i className="bi bi-box-arrow-up-right ms-2"></i>
+                  </a>
+                )}
               </div>
               <div className="modal-footer">
-                <button 
-                  className="btn btn-secondary" 
+                <button
+                  className="btn btn-outline-secondary"
                   onClick={handleCloseModal}
                 >
-                  Tutup
+                  Close
                 </button>
               </div>
             </div>

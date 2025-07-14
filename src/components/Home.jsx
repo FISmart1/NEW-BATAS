@@ -42,6 +42,15 @@ function Home() {
   const [selectedKeahlian, setSelectedKeahlian] = useState("");
   const [selectedAsal, setSelectedAsal] = useState("");
   const [reverseAnimation, setReverseAnimation] = useState(false);
+  const [testimoniList, setTestimoniList] = useState([]);
+  const [showTestimoniForm, setShowTestimoniForm] = useState(false);
+  const [filterActive, setFilterActive] = useState(false);
+
+  const [newTestimoni, setNewTestimoni] = useState({
+    nama: "",
+    instansi: "",
+    pesan: "",
+  });
 
   const nonPelajarScrollRef = useRef(null);
   const mitraRef = useRef(null);
@@ -113,16 +122,22 @@ function Home() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [siswaRes, projectsRes] = await Promise.all([
+        const [siswaRes, projectsRes, testimoniRes] = await Promise.all([
           axios.get("https://backend_best.smktibazma.com/api/getsiswa"),
           axios.get("https://backend_best.smktibazma.com/api/projects"),
+          axios.get("https://backend_best.smktibazma.com/api/testimoni"),
         ]);
 
         const siswaData = siswaRes.data.filter((s) => s.status === "alumni");
+
         const nonPelajarData = siswaData.filter(
-          (s) => s.posisi !== "Pelajar" && s.instansi?.trim()
+          (s) =>
+            s.posisi?.toLowerCase() !== "pelajar" &&
+            s.instansi &&
+            s.instansi.trim() !== ""
         );
 
+        setTestimoniList(testimoniRes.data);
         setNonPelajar(nonPelajarData);
         setAllSiswa(siswaData);
         setFilteredSiswa(siswaData);
@@ -140,6 +155,7 @@ function Home() {
         setKeahlianList([...keahlianSet]);
         setAsalList([...asalSet]);
         setSkillList([...new Set(allSkills)]);
+        console.log("Siswa Alumni:", siswaData);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -171,26 +187,42 @@ function Home() {
   useEffect(() => {
     const filtered = allSiswa.filter((s) => {
       const searchLower = searchTerm.toLowerCase();
+
+      const nama = s.name?.toLowerCase() || "";
+      const keahlian = s.keahlian?.toLowerCase() || "";
+      const skill = s.skill?.toLowerCase() || "";
+      const alamat = s.alamat || "";
+
       const matchSearch =
-        s.name.toLowerCase().includes(searchLower) ||
-        (s.keahlian && s.keahlian.toLowerCase().includes(searchLower)) ||
-        (s.skill && s.skill.toLowerCase().includes(searchLower));
+        nama.includes(searchLower) ||
+        keahlian.includes(searchLower) ||
+        skill.includes(searchLower);
 
       const matchKeahlian =
         selectedKeahlian === "" || s.keahlian === selectedKeahlian;
+
       const matchAsal = selectedAsal === "" || s.alamat === selectedAsal;
+
       const matchSkill =
         selectedSkill === "" ||
-        (s.skill &&
-          s.skill
-            .split(",")
-            .map((sk) => sk.trim().toLowerCase())
-            .includes(selectedSkill.toLowerCase()));
+        skill
+          .split(",")
+          .map((sk) => sk.trim())
+          .includes(selectedSkill.toLowerCase());
 
       return matchSearch && matchKeahlian && matchAsal && matchSkill;
     });
 
     setFilteredSiswa(filtered);
+
+    // Filter aktif jika ada input di search atau dropdown
+    const isAnyFilterActive =
+      searchTerm !== "" ||
+      selectedKeahlian !== "" ||
+      selectedSkill !== "" ||
+      selectedAsal !== "";
+
+    setFilterActive(isAnyFilterActive);
   }, [searchTerm, selectedKeahlian, selectedSkill, selectedAsal, allSiswa]);
 
   // Auto-scroll for partner logos
@@ -245,6 +277,26 @@ function Home() {
       }
     };
   }, [currentIndex]);
+
+  const handleSubmitTestimoni = async () => {
+    if (!newTestimoni.nama || !newTestimoni.pesan) {
+      alert("Nama dan pesan wajib diisi.");
+      return;
+    }
+
+    try {
+      const res = await axios.post(
+        "https://backend_best.smktibazma.com/api/testimoni",
+        newTestimoni
+      );
+      setTestimoniList((prev) => [...prev, res.data]);
+      setNewTestimoni({ nama: "", instansi: "", pesan: "" });
+      setShowTestimoniForm(false);
+    } catch (err) {
+      console.error("Gagal kirim testimoni:", err);
+      alert("Gagal menyimpan testimoni.");
+    }
+  };
 
   return (
     <div className="flex-column flex-md-row">
@@ -315,7 +367,7 @@ function Home() {
           <h2 className="text-center fw-bold mb-3 text-black col-12 col-md-8">
             Jejak Alumni, Cermin Keberhasilan dan Kebermanfaatan
           </h2>
-          <p className="text-justify mb-4 text-black col-12 col-md-8 ">
+          <p className="text-center mb-4 text-black col-12 col-md-6 ">
             Dari ruang kelas menuju perusahaan terkemuka, alumni kami
             membuktikan bahwa mimpi besar bisa terwujud melalui kerja keras dan
             kompetensi.
@@ -388,7 +440,10 @@ function Home() {
                       <h3 className="fw-bold">
                         {nonPelajar[currentIndex].name}
                       </h3>
-                      <p className="ml-3" style={{ minHeight: "72px", maxWidth: "80%" }}>
+                      <p
+                        className="ml-3"
+                        style={{ minHeight: "72px", maxWidth: "80%" }}
+                      >
                         {truncateText(
                           nonPelajar[currentIndex].deskripsi ||
                             "Tidak ada deskripsi",
@@ -516,14 +571,14 @@ function Home() {
             <input
               type="text"
               className="form-control rounded-3 px-4"
-              style={{ flex: 1, minWidth: "340px" }}
+              style={{ flex: 1, minWidth: "280px" }}
               placeholder="🔍 Cari nama atau keahlian..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <select
               className="form-select rounded-3"
-              style={{ maxWidth: "200px" }}
+              style={{ maxWidth: "280px" }}
               value={selectedKeahlian}
               onChange={(e) => setSelectedKeahlian(e.target.value)}
             >
@@ -536,7 +591,7 @@ function Home() {
             </select>
             <select
               className="form-select rounded-3"
-              style={{ maxWidth: "200px" }}
+              style={{ maxWidth: "280px" }}
               value={selectedSkill}
               onChange={(e) => setSelectedSkill(e.target.value)}
             >
@@ -549,7 +604,7 @@ function Home() {
             </select>
             <select
               className="form-select rounded-3"
-              style={{ maxWidth: "200px" }}
+              style={{ maxWidth: "280px" }}
               value={selectedAsal}
               onChange={(e) => setSelectedAsal(e.target.value)}
             >
@@ -564,86 +619,92 @@ function Home() {
         </div>
 
         <div className="row">
-          {filteredSiswa.length > 0 ? (
-            filteredSiswa.map((s) => (
-              <div className="col-6 col-sm-6 col-lg-4 mb-4" key={s.id}>
-                <div className="card h-100 shadow-custom border-0">
-                  <div className="card-body d-flex flex-column">
-                    <div
-                      className="d-flex align-items-center mb-3"
-                      style={{ gap: "0.75rem" }}
-                    >
-                      <img
-                        src={`${imageBaseUrl}${s.foto}`}
-                        alt={s.name}
-                        className="rounded-circle"
-                        style={{
-                          width: "60px",
-                          height: "60px",
-                          objectFit: "cover",
-                          flexShrink: 0,
-                        }}
-                      />
-                      <div style={{ minWidth: 0 }}>
-                        <h5
-                          className="mb-0 text-truncate"
-                          style={{ maxWidth: "100%" }}
-                        >
-                          {s.name}
-                        </h5>
-                        <div className="d-flex flex-column">
-                          <small className="text-muted">
-                            Angkatan {s.angkatan}
-                          </small>
-                          <small className="text-muted">
-                            Alamat {s.alamat}
-                          </small>
+          {filterActive ? (
+            filteredSiswa.length > 0 ? (
+              filteredSiswa.map((s) => (
+                <div className="col-6 col-sm-6 col-lg-4 mb-4" key={s.id}>
+                  <div className="card h-100 shadow-custom border-0">
+                    <div className="card-body d-flex flex-column">
+                      <div
+                        className="d-flex align-items-center mb-3"
+                        style={{ gap: "0.75rem" }}
+                      >
+                        <img
+                          src={`${imageBaseUrl}${s.foto}`}
+                          alt={s.name}
+                          className="rounded-circle"
+                          style={{
+                            width: "60px",
+                            height: "60px",
+                            objectFit: "cover",
+                            flexShrink: 0,
+                          }}
+                        />
+                        <div style={{ minWidth: 0 }}>
+                          <h5
+                            className="mb-0 text-truncate"
+                            style={{ maxWidth: "100%" }}
+                          >
+                            {s.name}
+                          </h5>
+                          <div className="d-flex flex-column">
+                            <small className="text-muted">
+                              Angkatan {s.angkatan}
+                            </small>
+                            <small className="text-muted">
+                              Alamat {s.alamat}
+                            </small>
+                          </div>
                         </div>
                       </div>
-                    </div>
 
-                    <p
-                      className="mb-3"
-                      style={{
-                        fontSize: "0.9rem",
-                        backgroundColor: "#12294A",
-                        color: "white",
-                        padding: "5px",
-                        borderRadius: "5px",
-                        width: "fit-content",
-                        maxWidth: "100%",
-                        overflow: "hidden",
-                        textOverflow: "ellipsis",
-                        whiteSpace: "nowrap",
-                      }}
-                      title={s.keahlian}
-                    >
-                      <strong>{s.keahlian}</strong>
-                    </p>
-
-                    <p className="mb-1 text-truncate">
-                      <i className="bi bi-building me-1"></i>
-                      {s.instansi || "-"}, {s.posisi || "-"}
-                    </p>
-
-                    <p className="small mb-3 text-truncate">
-                      <i className="bi bi-lightning-fill me-1"></i>
-                      {s.skill || "-"}
-                    </p>
-
-                    <div className="mt-auto">
-                      <button
-                        className="btn w-100"
-                        style={{ backgroundColor: "#12294A", color: "white" }}
-                        onClick={() => navigate(`/siswa/${s.id}`)}
+                      <p
+                        className="mb-3"
+                        style={{
+                          fontSize: "0.9rem",
+                          backgroundColor: "#12294A",
+                          color: "white",
+                          padding: "5px",
+                          borderRadius: "5px",
+                          width: "fit-content",
+                          maxWidth: "100%",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          whiteSpace: "nowrap",
+                        }}
+                        title={s.keahlian}
                       >
-                        Lihat Profil
-                      </button>
+                        <strong>{s.keahlian}</strong>
+                      </p>
+
+                      <p className="mb-1 text-truncate">
+                        <i className="bi bi-building me-1"></i>
+                        {s.instansi || "-"}, {s.posisi || "-"}
+                      </p>
+
+                      <p className="small mb-3 text-truncate">
+                        <i className="bi bi-lightning-fill me-1"></i>
+                        {s.skill || "-"}
+                      </p>
+
+                      <div className="mt-auto">
+                        <button
+                          className="btn w-100"
+                          style={{ backgroundColor: "#12294A", color: "white" }}
+                          onClick={() => navigate(`/siswa/${s.id}`)}
+                        >
+                          Lihat Profil
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-center text-muted mt-4">
+                <p>❌ Tidak ada siswa yang cocok dengan filter.</p>
               </div>
-            ))
+            )
           ) : (
             <div className="text-center text-muted mt-4">
               <p>
@@ -790,7 +851,7 @@ function Home() {
         viewport={{ once: true }}
         variants={fadeInUp}
       >
-        <h1 className="text-center mb-4">Mitra Kami</h1>
+        <h2 className="text-center fw-bold mb-5">Mitra Kami</h2>
         <div className="px-2">
           <div
             ref={mitraRef}
@@ -823,6 +884,152 @@ function Home() {
           </div>
         </div>
       </motion.div>
+      {/* Testimonials Section */}
+      <motion.div
+        className="container my-5 py-5"
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true }}
+        variants={fadeInUp}
+      >
+        <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
+          <div className="text-center text-md-start mb-4 mb-md-0">
+            <h2 className="fw-bold mb-2">What Our Clients Say</h2>
+            <p className="text-muted">
+              Trusted by professionals and organizations
+            </p>
+          </div>
+          {/*<button
+            className="btn btn-primary px-4 py-3 rounded-pill d-flex align-items-center"
+            onClick={() => setShowTestimoniForm(true)}
+          >
+            <i className="bi bi-plus-circle me-2"></i>
+            Add Testimonial
+          </button>*/}
+        </div>
+
+        <div className="row g-4">
+          {testimoniList.length > 0 ? (
+            testimoniList.map((item) => (
+              <div className="col-md-6 col-lg-4" key={item.id}>
+                <motion.div
+                  className="card h-100 border-0 shadow-lg rounded-4 overflow-hidden"
+                  whileHover={{ y: -5 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <div className="card-body p-4 d-flex flex-column">
+                    <div className="d-flex align-items-center mb-3">
+                      <div className="bg-primary bg-opacity-10 text-custom rounded-circle p-3 me-3">
+                        <i className="bi bi-person-fill fs-4"></i>
+                      </div>
+                      <div>
+                        <h5 className="card-title mb-0 fw-semibold">
+                          {item.nama}
+                        </h5>
+                        <small className="text-muted">
+                          {item.instansi || "General Public"}
+                        </small>
+                      </div>
+                    </div>
+                    <div className="mb-3">
+                      <div className="text-warning mb-2">
+                        {[...Array(5)].map((_, i) => (
+                          <i key={i} className="bi bi-star-fill"></i>
+                        ))}
+                      </div>
+                      <p className="card-text fst-italic">"{item.pesan}"</p>
+                    </div>
+                    <div className="mt-auto text-end">
+                      <i className="bi bi-quote fs-1 text-custom opacity-10"></i>
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
+            ))
+          ) : (
+            <div className="col-12 text-center py-5">
+              <div className="bg-light rounded-4 p-5">
+                <i className="bi bi-chat-square-text fs-1 text-muted mb-3"></i>
+                <h4 className="fw-semibold mb-3">No Testimonials Yet</h4>
+                <p className="text-muted mb-4">
+                  Be the first to share your experience with us
+                </p>
+                <button
+                  className="btn btn-outline-primary rounded-pill"
+                  onClick={() => setShowTestimoniForm(true)}
+                >
+                  Share Your Feedback
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </motion.div>
+      {showTestimoniForm && (
+        <div
+          className="modal d-block"
+          style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        >
+          <div className="modal-dialog modal-dialog-centered">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title">Tambah Testimoni</h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  onClick={() => setShowTestimoniForm(false)}
+                ></button>
+              </div>
+              <div className="modal-body">
+                <input
+                  type="text"
+                  placeholder="Nama"
+                  className="form-control mb-2"
+                  value={newTestimoni.nama}
+                  onChange={(e) =>
+                    setNewTestimoni({ ...newTestimoni, nama: e.target.value })
+                  }
+                />
+                <input
+                  type="text"
+                  placeholder="Instansi (opsional)"
+                  className="form-control mb-2"
+                  value={newTestimoni.instansi}
+                  onChange={(e) =>
+                    setNewTestimoni({
+                      ...newTestimoni,
+                      instansi: e.target.value,
+                    })
+                  }
+                />
+                <textarea
+                  placeholder="Pesan"
+                  className="form-control mb-2"
+                  rows="4"
+                  value={newTestimoni.pesan}
+                  onChange={(e) =>
+                    setNewTestimoni({ ...newTestimoni, pesan: e.target.value })
+                  }
+                ></textarea>
+              </div>
+              <div className="modal-footer">
+                <button
+                  className="btn btn-secondary"
+                  onClick={() => setShowTestimoniForm(false)}
+                >
+                  Batal
+                </button>
+                <button
+                  className="btn btn-primary"
+                  onClick={handleSubmitTestimoni}
+                >
+                  Kirim
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

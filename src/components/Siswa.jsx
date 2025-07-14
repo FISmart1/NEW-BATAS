@@ -6,14 +6,14 @@ import { motion } from "framer-motion";
 function SiswaByAngkatan() {
   const { angkatan } = useParams();
   const navigate = useNavigate();
-  
+
   // State management
   const [siswa, setSiswa] = useState([]);
   const [filteredSiswa, setFilteredSiswa] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [showFilter, setShowFilter] = useState(true);
-  
+
   // Filter options state
   const [filters, setFilters] = useState({
     angkatan: angkatan || "all",
@@ -21,18 +21,18 @@ function SiswaByAngkatan() {
     skill: "",
     daerah: "",
     posisi: "",
-    instansi: ""
+    instansi: "",
   });
-  
+
   // Filter lists
   const [filterOptions, setFilterOptions] = useState({
     keahlian: [],
     skill: [],
     daerah: [],
     posisi: [],
-    instansi: []
+    instansi: [],
   });
-  
+
   const angkatanList = [1, 2, 3, 4, 5];
   const baseImageUrl = "https://backend_best.smktibazma.com/uploads/";
   const cardRefs = useRef([]);
@@ -42,28 +42,35 @@ function SiswaByAngkatan() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const response = await axios.get("https://backend_best.smktibazma.com/api/getsiswa");
+        const response = await axios.get(
+          "https://backend_best.smktibazma.com/api/getsiswa"
+        );
         const sortedData = response.data.sort((a, b) => {
           if (a.angkatan !== b.angkatan) return a.angkatan - b.angkatan;
           return a.name.localeCompare(b.name, "id", { sensitivity: "base" });
         });
-        
+
         setSiswa(sortedData);
         setFilteredSiswa(sortedData);
-        
+
         // Extract unique filter options
         setFilterOptions({
-          keahlian: [...new Set(sortedData.map(s => s.keahlian).filter(Boolean))],
-          daerah: [...new Set(sortedData.map(s => s.alamat).filter(Boolean))],
-          posisi: [...new Set(sortedData.map(s => s.posisi).filter(Boolean))],
-          instansi: [...new Set(sortedData.map(s => s.instansi).filter(Boolean))],
-          skill: [...new Set(
-            sortedData.flatMap(s => 
-              s.skill ? s.skill.split(",").map(sk => sk.trim()) : []
-            )
-          )]
+          keahlian: [
+            ...new Set(sortedData.map((s) => s.keahlian).filter(Boolean)),
+          ],
+          daerah: [...new Set(sortedData.map((s) => s.alamat).filter(Boolean))],
+          posisi: [...new Set(sortedData.map((s) => s.posisi).filter(Boolean))],
+          instansi: [
+            ...new Set(sortedData.map((s) => s.instansi).filter(Boolean)),
+          ],
+          skill: [
+            ...new Set(
+              sortedData.flatMap((s) =>
+                s.skill ? s.skill.split(",").map((sk) => sk.trim()) : []
+              )
+            ),
+          ],
         });
-        
       } catch (error) {
         console.error("Error fetching student data:", error);
       } finally {
@@ -77,24 +84,28 @@ function SiswaByAngkatan() {
   // Apply filters
   useEffect(() => {
     let result = [...siswa];
-    
+
     // Apply text search
     if (searchTerm) {
-      result = result.filter(s => 
+      result = result.filter((s) =>
         s.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Apply all other filters
-    result = result.filter(s => {
+    result = result.filter((s) => {
       return (
-        (filters.angkatan === "all" || s.angkatan === Number(filters.angkatan)) &&
-
+        (filters.angkatan === "all" ||
+          s.angkatan === Number(filters.angkatan)) &&
         (!filters.keahlian || s.keahlian === filters.keahlian) &&
-        (!filters.skill || s.skill?.toLowerCase().includes(filters.skill.toLowerCase())) &&
-        (!filters.daerah || s.alamat?.toLowerCase().includes(filters.daerah.toLowerCase())) &&
-        (!filters.posisi || s.posisi?.toLowerCase().includes(filters.posisi.toLowerCase())) &&
-        (!filters.instansi || s.instansi?.toLowerCase().includes(filters.instansi.toLowerCase()))
+        (!filters.skill ||
+          s.skill?.toLowerCase().includes(filters.skill.toLowerCase())) &&
+        (!filters.daerah ||
+          s.alamat?.toLowerCase().includes(filters.daerah.toLowerCase())) &&
+        (!filters.posisi ||
+          s.posisi?.toLowerCase().includes(filters.posisi.toLowerCase())) &&
+        (!filters.instansi ||
+          s.instansi?.toLowerCase().includes(filters.instansi.toLowerCase()))
       );
     });
 
@@ -105,7 +116,7 @@ function SiswaByAngkatan() {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           if (entry.isIntersecting) {
             entry.target.classList.add("animate-fadeIn");
           }
@@ -114,12 +125,12 @@ function SiswaByAngkatan() {
       { threshold: 0.1 }
     );
 
-    cardRefs.current.forEach(el => {
+    cardRefs.current.forEach((el) => {
       if (el) observer.observe(el);
     });
 
     return () => {
-      cardRefs.current.forEach(el => {
+      cardRefs.current.forEach((el) => {
         if (el) observer.unobserve(el);
       });
     };
@@ -127,26 +138,25 @@ function SiswaByAngkatan() {
 
   // Handle filter change
   const handleFilterChange = (filterName, value) => {
-    setFilters(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [filterName]: value
+      [filterName]: value,
     }));
   };
 
   // Filter configuration
   const filterConfig = [
-    
     { label: "Keahlian", name: "keahlian", options: filterOptions.keahlian },
     { label: "Skill", name: "skill", options: filterOptions.skill },
     { label: "Asal Daerah", name: "daerah", options: filterOptions.daerah },
     { label: "Posisi", name: "posisi", options: filterOptions.posisi },
-    { label: "Instansi", name: "instansi", options: filterOptions.instansi }
+    { label: "Instansi", name: "instansi", options: filterOptions.instansi },
   ];
 
   return (
     <div className="container my-3 pt-5">
       {/* Hero Section */}
-      <motion.div 
+      <motion.div
         className="text-center p-5 text-white rounded-4 mb-4"
         style={{ backgroundColor: "#12294A" }}
         initial={{ opacity: 0, y: -20 }}
@@ -174,7 +184,7 @@ function SiswaByAngkatan() {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-              <button 
+              <button
                 className="btn"
                 style={{ backgroundColor: "#12294A", color: "white" }}
                 onClick={() => setShowFilter(!showFilter)}
@@ -196,16 +206,20 @@ function SiswaByAngkatan() {
         </div>
 
         <p className="text-center mb-0">
-          Menampilkan <span className="badge" style={{ backgroundColor: "#12294A" }}>{filteredSiswa.length}</span> siswa
+          Menampilkan{" "}
+          <span className="badge" style={{ backgroundColor: "#12294A" }}>
+            {filteredSiswa.length}
+          </span>{" "}
+          siswa
         </p>
       </div>
 
       {/* Filter Panel */}
       {showFilter && (
-        <motion.div 
+        <motion.div
           className="bg-light p-4 rounded-4 shadow-sm mb-4"
           initial={{ opacity: 0, height: 0 }}
-          animate={{ opacity: 1, height: 'auto' }}
+          animate={{ opacity: 1, height: "auto" }}
           exit={{ opacity: 0, height: 0 }}
           transition={{ duration: 0.3 }}
         >
@@ -214,7 +228,7 @@ function SiswaByAngkatan() {
               <i className="bi bi-sliders me-2"></i>
               Filter Siswa
             </h5>
-            <button 
+            <button
               className="btn btn-sm btn-outline-secondary"
               onClick={() => {
                 setFilters({
@@ -222,14 +236,14 @@ function SiswaByAngkatan() {
                   skill: "",
                   daerah: "",
                   posisi: "",
-                  instansi: ""
+                  instansi: "",
                 });
               }}
             >
               Reset Filter
             </button>
           </div>
-          
+
           <div className="row g-3">
             {filterConfig.map((filter, i) => (
               <div className="col-md-4 col-6" key={i}>
@@ -239,7 +253,9 @@ function SiswaByAngkatan() {
                 <select
                   className="form-select"
                   value={filters[filter.name]}
-                  onChange={(e) => handleFilterChange(filter.name, e.target.value)}
+                  onChange={(e) =>
+                    handleFilterChange(filter.name, e.target.value)
+                  }
                 >
                   <option value="">Semua {filter.label}</option>
                   {filter.options.map((item, idx) => (
@@ -265,10 +281,10 @@ function SiswaByAngkatan() {
       ) : filteredSiswa.length > 0 ? (
         <div className="row g-4">
           {filteredSiswa.map((s, index) => (
-            <div 
-              key={s.id} 
+            <div
+              key={s.id}
               className="col-12 col-sm-6 col-md-4 col-lg-3"
-              ref={el => cardRefs.current[index] = el}
+              ref={(el) => (cardRefs.current[index] = el)}
             >
               <motion.div
                 className="card h-100 border-0 shadow-sm overflow-hidden hover-effect"
@@ -285,29 +301,42 @@ function SiswaByAngkatan() {
                   />
                   <div className="position-absolute bottom-0 start-0 end-0 p-3 bg-gradient-dark">
                     <div className="d-flex justify-content-between align-items-center">
-                      <span className="badge" style={{ backgroundColor: "#12294A" }}>{s.keahlian}</span>
-                      <span className="badge bg-secondary">Angkatan {s.angkatan}</span>
+                      <span
+                        className="badge"
+                        style={{ backgroundColor: "#12294A" }}
+                      >
+                        {s.keahlian}
+                      </span>
+                      <span className="badge bg-secondary">
+                        Angkatan {s.angkatan}
+                      </span>
                     </div>
                   </div>
                 </div>
-                
-                <div className="card-body">
+
+                <div className="card-body d-flex flex-column h-100">
                   <h5 className="card-title fw-bold mb-1">{s.name}</h5>
                   <p className="card-text small text-muted mb-2">
                     {s.posisi && `${s.posisi} di `}
                     {s.instansi || "SMK TI BAZMA"}
                   </p>
-                  
+
                   {s.skill && (
                     <div className="mb-3">
-                      {s.skill.split(',').slice(0, 3).map((skill, i) => (
-                        <span key={i} className="badge bg-light text-dark me-1 mb-1">
-                          {skill.trim()}
-                        </span>
-                      ))}
+                      {s.skill
+                        .split(",")
+                        .slice(0, 3)
+                        .map((skill, i) => (
+                          <span
+                            key={i}
+                            className="badge bg-light text-dark me-1 mb-1"
+                          >
+                            {skill.trim()}
+                          </span>
+                        ))}
                     </div>
                   )}
-                  
+
                   <button
                     className="btn w-100 mt-auto"
                     style={{ backgroundColor: "#12294A", color: "white" }}
@@ -329,17 +358,17 @@ function SiswaByAngkatan() {
           <p className="text-muted mb-4">
             Coba gunakan kata kunci atau filter yang berbeda
           </p>
-          <button 
+          <button
             className="btn btn-primary"
             onClick={() => {
-              setSearchTerm('');
+              setSearchTerm("");
               setFilters({
                 angkatan: "all",
                 keahlian: "",
                 skill: "",
                 daerah: "",
                 posisi: "",
-                instansi: ""
+                instansi: "",
               });
             }}
           >

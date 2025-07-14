@@ -134,7 +134,7 @@ export default function App() {
                   className=""
                   style={{ fontSize: "14px", marginLeft: "10px" }}
                 >
-                  Bazma Excelent Showcase Talent
+                  Bazma's Excelent Showcase of Talents
                 </span>
               </div>
 
@@ -150,7 +150,7 @@ export default function App() {
                   {user ? (
                     <div className="position-relative d-flex align-items-center">
                       <img
-                        src={`http://localhost:3006/uploads/${user.foto}`}
+                        src={`https://backend_best.smktibazma.com/uploads/${user.foto}`}
                         width={"30px"}
                         height={"30px"}
                         className="rounded-circle me-2"
@@ -461,19 +461,19 @@ export default function App() {
               </div>
             </div>
 
-            <hr className="border-white my-4" />
+            <hr className="border-white mt-4" />
 
             {/* Bottom Footer */}
-            <div className="d-flex flex-column flex-md-row justify-content-between align-items-center gap-2">
-              <p className="mb-0 text-center text-md-start small">
+            <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
+              <p className="mb-2 text-center text-md-start small">
                 <strong>© Team Developer</strong> Ristina Eka Salsabila S.Kom -
                 Nur Yusuf Ferdiansyah - Muhammad Iqbal Asqalani
               </p>
               <div>
-                <a href="#" className="text-white me-3 fs-5">
+                <a href="#" className="text-white me-3 mb-2 fs-5">
                   <i className="bi bi-instagram"></i>
                 </a>
-                <a href="#" className="text-white fs-5">
+                <a href="#" className="text-white fs-5 mb-2">
                   <i className="bi bi-youtube"></i>
                 </a>
               </div>
