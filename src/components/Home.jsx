@@ -897,13 +897,13 @@ function Home() {
               Trusted by professionals and organizations
             </p>
           </div>
-          <button
+          {/*<button
             className="btn btn-primary px-4 py-3 rounded-pill d-flex align-items-center"
             onClick={() => setShowTestimoniForm(true)}
           >
             <i className="bi bi-plus-circle me-2"></i>
             Add Testimonial
-          </button>
+          </button>*/}
         </div>
 
         <div className="row g-4">
