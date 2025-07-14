@@ -140,7 +140,7 @@ function SiswaDetail() {
         id="profile-section"
       >
         {/* Profile Header */}
-        <div className="bg-custom bg-opacity-10 p-4 p-md-5">
+        <div className="bg-opacity-10 p-4 p-md-5" style={{backgroundColor: "#12294A"}}>
           <div className="row align-items-center">
             <div className="col-md-8">
               <h1 className=" fw-bold text-white mb-3">{siswa.name}</h1>
