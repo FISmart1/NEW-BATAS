@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import CreatableSelect from "react-select/creatable";
+import imageCompression from "browser-image-compression";
+
 function AddSiswa() {
   const navigate = useNavigate();
   const skillOptions = [
@@ -13,11 +15,11 @@ function AddSiswa() {
     { value: "Node.js", label: "Node.js" },
     { value: "Python", label: "Python" },
     { value: "iot", label: "iot" },
-    {value: "figma", label: "figma"},
-    {value: "photoshop", label: "photoshop"},
+    { value: "figma", label: "figma" },
+    { value: "photoshop", label: "photoshop" },
     { value: "illustrator", label: "illustrator" },
     { value: "premiere", label: "premiere" },
-    { value:"mysql", label: "mysql" },
+    { value: "mysql", label: "mysql" },
   ];
   const [formData, setFormData] = useState({
     id: "",
@@ -85,7 +87,7 @@ function AddSiswa() {
       skill: fd.skill,
       linkedin: fd.linkedin,
       status: fd.status,
-    })
+    });
     setShowModal(true);
     setIsEdit(true); // TAMBAHKAN INI
   };
@@ -120,8 +122,29 @@ function AddSiswa() {
   /* ------------ handlers ------------ */
   const handleChange = (e) =>
     setFormData({ ...formData, [e.target.name]: e.target.value });
-  const handleFileChange = (e) =>
-    setFiles({ ...files, [e.target.name]: e.target.files[0] });
+  const handleFileChange = async (e) => {
+    const file = e.target.files[0];
+    const name = e.target.name;
+
+    if (!file) return;
+
+    try {
+      const options = {
+        maxSizeMB: 0.5, // target maksimal 500KB
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+
+      setFiles((prev) => ({
+        ...prev,
+        [name]: compressedFile,
+      }));
+    } catch (error) {
+      console.error("Gagal kompres file:", error);
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -173,7 +196,7 @@ function AddSiswa() {
         id: formData.id,
         id_lama: formData.id,
         name: formData.name,
-      })
+      });
     }
   };
 
@@ -327,7 +350,11 @@ function AddSiswa() {
             <form onSubmit={handleSubmit}>
               <div className="row">
                 <div className="col-md-6">
-                  <input type="hidden" name="id_lama" value={formData.id_lama} />
+                  <input
+                    type="hidden"
+                    name="id_lama"
+                    value={formData.id_lama}
+                  />
 
                   <input
                     name="id"
@@ -363,7 +390,7 @@ function AddSiswa() {
                     onChange={handleChange}
                     className="form-select mb-2"
                   >
-                    <option value="">Pilih Keahlian</option>
+                    <option value="">Pilih Kompetensi</option>
                     <option value="Web Developer">Web Developer</option>
                     <option value="Back-End Developer">
                       Back-End Developer
@@ -387,6 +414,8 @@ function AddSiswa() {
                       IT Support Assistant
                     </option>
                     <option value="IT Support Assistant">IOT Engineer</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Videography">Videography</option>
                   </select>
                   <CreatableSelect
                     isMulti
@@ -473,6 +502,7 @@ function AddSiswa() {
                     <option value="pelajar">Pelajar</option>
                     <option value="Staff">Staff</option>
                     <option value="Mahasiswa">Mahasiswa</option>
+                    <option value="Junior Programmer">Junior Programmer</option>
                     <option value="Belum bekerja">Belum Bekerja</option>
                   </select>
                   <input

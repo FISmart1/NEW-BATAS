@@ -1,11 +1,12 @@
 import React, { useState, useContext, useEffect } from "react";
 import AppRoutes from "./routes/index";
 import { Link, useNavigate } from "react-router-dom";
-import Sidebar from "./components/Sidebar";
+
 import bazmaLogo from "../src/assets/logo-bazma.png";
 import axios from "axios";
 import { AuthContext } from "../context/AuthContext";
 import best from "../src/assets/best.png";
+
 
 export default function App() {
   const navigate = useNavigate();
@@ -149,13 +150,24 @@ export default function App() {
                   </Link>
                   {user ? (
                     <div className="position-relative d-flex align-items-center">
-                      <img
+                      {user.role === "admin"
+                      ? <img
+                        src={best}
+                        width={"30px"}
+                        height={"30px"}
+                        className="rounded-circle me-2"
+                        alt="User"
+                      />
+
+                      : <img
                         src={`https://backend_best.smktibazma.com/uploads/${user.foto}`}
                         width={"30px"}
                         height={"30px"}
                         className="rounded-circle me-2"
                         alt="User"
                       />
+                      }
+                      
                       <button
                         className="btn btn-sm dropdown-toggle"
                         style={{

@@ -32,3 +32,29 @@
 .rounded-corners {
   border-radius: 50%;
 }
+
+
+.btn-birutua {
+  background-color: #12294A;
+  color: white;
+}
+
+.btn-birutua:hover {
+  background-color: #081220;
+  color: white;
+}
+
+.btn-outline-birutua {
+  color: #12294A;
+  border: 1px solid #12294A;
+  background-color: transparent;
+}
+
+.btn-outline-birutua:hover {
+  background-color: #12294A;
+  color: white;
+}
+
+.text-custom {
+  color: #12294A;
+}

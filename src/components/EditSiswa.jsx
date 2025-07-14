@@ -5,7 +5,8 @@ import { AuthContext } from "../../context/AuthContext";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import CreatableSelect from "react-select/creatable";
-
+import CropModal from "../components/CropModal"; // pastikan path-nya sesuai file
+import imageCompression from "browser-image-compression";
 const EditSiswa = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -64,12 +65,56 @@ const EditSiswa = () => {
 
   const [fotoFile, setFotoFile] = useState(null);
   const [cvFile, setCvFile] = useState(null);
-  // Tambahkan fungsi untuk refresh data siswa
-  const refreshSiswa = async () => {
-    const res = await axios.get(
-      `https://backend_best.smktibazma.com/api/siswa/${id}`
-    );
-    setSiswa(res.data.siswa);
+  const [showCropModal, setShowCropModal] = useState(false);
+  const [tempImage, setTempImage] = useState(null);
+
+  const handleImageSelect = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    // ✅ Kompres gambar
+    try {
+      const options = {
+        maxSizeMB: 0.5, // Ukuran maksimal dalam MB
+        maxWidthOrHeight: 800, // Resolusi maksimal
+        useWebWorker: true,
+      };
+
+      const compressedFile = await imageCompression(file, options);
+
+      // Preview ke CropModal
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setTempImage(reader.result); // Data URL for crop preview
+        setShowCropModal(true);
+      };
+      reader.readAsDataURL(compressedFile);
+
+      // Simpan sementara file asli hasil kompres
+      setFotoFile(compressedFile);
+    } catch (error) {
+      console.error("Gagal kompres gambar:", error);
+    }
+  };
+
+  const handleCropDone = async (croppedFile) => {
+    try {
+      const options = {
+        maxSizeMB: 0.5,
+        maxWidthOrHeight: 800,
+        useWebWorker: true,
+      };
+
+      const compressedCroppedFile = await imageCompression(
+        croppedFile,
+        options
+      );
+
+      setFotoFile(compressedCroppedFile);
+      setShowCropModal(false);
+    } catch (error) {
+      console.error("Gagal kompres gambar hasil crop:", error);
+    }
   };
 
   // Fetch student data
@@ -172,45 +217,43 @@ const EditSiswa = () => {
   // Handle profile form submission
   const handleProfileSubmit = async (e) => {
     e.preventDefault();
-    console.log("Submit profil diklik"); // ❗️ Pastikan tetap ada untuk debug
 
     try {
       const fd = new FormData();
 
-      // Append semua field, skip password kosong
+      // Append semua field dari profileForm
       for (const key in profileForm) {
         if (key === "password" && !profileForm[key]) continue;
-        fd.append(key, profileForm[key]);
+        if (key !== "foto") {
+          // Jangan append field foto dari profileForm
+          fd.append(key, profileForm[key]);
+        }
       }
 
       // Append file jika ada
       if (fotoFile) fd.append("foto", fotoFile);
       if (cvFile) fd.append("cv", cvFile);
 
-      // LOG: tampilkan isi FormData untuk verifikasi
-      for (let [k, v] of fd.entries()) {
-        console.log(`${k}:`, v);
-      }
-
-      // Kirim request tanpa config apapun
       const response = await axios.put(
         `https://backend_best.smktibazma.com/api/siswa/update/${id}`,
-        fd
+        fd,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
       );
-
-      console.log("Server response:", response.data);
 
       if (response.status === 200) {
         toast.success("Profil berhasil diperbarui!");
-
-        // 🔄 Refresh data siswa agar UI ter‑update
         const res = await axios.get(
           `https://backend_best.smktibazma.com/api/siswa/${id}`
         );
         setSiswa(res.data.siswa);
 
-        // 🚮 Reset file inputs
+        // Reset file inputs
         setFotoFile(null);
+        document.getElementById("fotoInput").value = ""; // Reset input file
         setCvFile(null);
       } else {
         toast.error("Gagal memperbarui profil");
@@ -359,10 +402,7 @@ const EditSiswa = () => {
 
             <div className="col-md-9">
               <h2 className="fw-bold mb-2">{siswa.name}</h2>
-              <div
-                className="d-flex flex-wrap gap-2 mb-3 pb-3"
-                style={{ borderBottom: "1px solid #12294A" }}
-              >
+              <div className="d-flex flex-wrap gap-2 mb-3 pb-3">
                 {siswa.posisi && (
                   <span
                     className="badge bg-opacity-10 px-3 py-2"
@@ -467,7 +507,7 @@ const EditSiswa = () => {
                     onChange={handleProfileChange}
                     className="form-select"
                   >
-                    <option value="">Pilih Keahlian</option>
+                    <option value="">Pilih Kompetensi</option>
                     <option value="Web Developer">Web Developer</option>
                     <option value="Back-End Developer">
                       Back-End Developer
@@ -491,6 +531,8 @@ const EditSiswa = () => {
                       IT Support Assistant
                     </option>
                     <option value="IT Support Assistant">IOT Engineer</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Videography">Videography</option>
                   </select>
                 </div>
 
@@ -506,6 +548,7 @@ const EditSiswa = () => {
                     <option value="pelajar">Pelajar</option>
                     <option value="Staff">Staff</option>
                     <option value="Mahasiswa">Mahasiswa</option>
+                    <option value="Junior Programmer">Junior Programmer</option>
                     <option value="Belum bekerja">Belum Bekerja</option>
                   </select>
                 </div>
@@ -694,7 +737,7 @@ const EditSiswa = () => {
                   <input
                     type="file"
                     className="form-control"
-                    onChange={(e) => setFotoFile(e.target.files[0])}
+                    onChange={handleImageSelect}
                     accept="image/*"
                   />
                 </div>
@@ -1059,6 +1102,14 @@ const EditSiswa = () => {
             </form>
           </div>
         </div>
+      )}
+
+      {showCropModal && (
+        <CropModal
+          imageSrc={tempImage}
+          onClose={() => setShowCropModal(false)}
+          onCropDone={handleCropDone}
+        />
       )}
     </div>
   );

@@ -13,14 +13,8 @@ import AddSiswa from "../components/admin/AddSiswa";
 import AddPengalaman from "../components/admin/AddPengalaman";
 import AddProject from "../components/admin/AddProject";
 import Loading from "../components/loading";
-import Team from "../components/Team";
-import FormProject from "../components/FormProject";
-import Pending from "../components/admin/ProjectPending";
-import Form from "../components/SeluruhForm";
-import FormSiswa from "../components/SiswaPending";
-import SiswaPending from "../components/admin/SiswaSetuju";
-import FormPengalaman from "../components/FormPengalaman";
-import PengalamanPending from "../components/admin/PengalamanPending";
+
+
 import EditSiswa from "../components/EditSiswa";
 import ProtectedRoute from "../components/ProtectedRoute";
 import { useAuth } from "../../context/AuthContext";
@@ -34,11 +28,8 @@ export default function AppRoutes() {
       <Route path="/home" element={<Home />} />
       <Route path="/angkatan" element={<SiswaByAngkatan />} />
       <Route path="/siswa/:id" element={<SiswaDetail />} />
-      <Route path="/team" element={<Team />} />
-      <Route path="/form" element={<Form />} />
-      <Route path="/formproject" element={<FormProject />} />
-      <Route path="/formsiswa" element={<FormSiswa />} />
-      <Route path="/formpengalaman" element={<FormPengalaman />} />
+
+
       <Route
         path="/edit-siswa/:id"
         element={
@@ -80,30 +71,7 @@ export default function AppRoutes() {
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/admin/project-pending"
-        element={
-          <ProtectedRoute role="admin">
-            <Pending />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/siswa-pending"
-        element={
-          <ProtectedRoute role="admin">
-            <SiswaPending />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/pengalaman-pending"
-        element={
-          <ProtectedRoute role="admin">
-            <PengalamanPending />
-          </ProtectedRoute>
-        }
-      />
+
     </Routes>
   );
 }

@@ -33,7 +33,6 @@ function SiswaByAngkatan() {
     instansi: [],
   });
 
-  const angkatanList = [1, 2, 3, 4, 5];
   const baseImageUrl = "https://backend_best.smktibazma.com/uploads/";
   const cardRefs = useRef([]);
 
@@ -163,9 +162,9 @@ function SiswaByAngkatan() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h1 className="display-5 fw-bold mb-3">Temukan Portofolio Siswa</h1>
+        <h1 className="display-5 fw-bold mb-3">Temukan Portofolio Siswa/alumni</h1>
         <p className="lead mb-4">
-          Jelajahi talenta-talenta terbaik dari berbagai angkatan
+          Jelajahi talenta-talenta terbaik dari berbagai keahlian dan latar belakang.
         </p>
       </motion.div>
 
@@ -210,7 +209,7 @@ function SiswaByAngkatan() {
           <span className="badge" style={{ backgroundColor: "#12294A" }}>
             {filteredSiswa.length}
           </span>{" "}
-          siswa
+          siswa dan alumni
         </p>
       </div>
 
@@ -232,6 +231,7 @@ function SiswaByAngkatan() {
               className="btn btn-sm btn-outline-secondary"
               onClick={() => {
                 setFilters({
+                  angkatan: angkatan || "all",
                   keahlian: "",
                   skill: "",
                   daerah: "",
@@ -245,8 +245,26 @@ function SiswaByAngkatan() {
           </div>
 
           <div className="row g-3">
+            <div className="col-md-2 col-6">
+              <label className="form-label small fw-bold text-uppercase text-muted">
+                Angkatan
+              </label>
+              <select
+                className="form-select"
+                value={filters.angkatan}
+                onChange={(e) => handleFilterChange("angkatan", e.target.value)}
+              >
+                <option value="all">Semua Angkatan</option>
+                {[1, 2, 3, 4, 5].map((item) => (
+                  <option key={item} value={item}>
+                    Angkatan {item}
+                  </option>
+                ))}
+              </select>
+            </div>
+            
             {filterConfig.map((filter, i) => (
-              <div className="col-md-4 col-6" key={i}>
+              <div className="col-md-2 col-6" key={i}>
                 <label className="form-label small fw-bold text-uppercase text-muted">
                   {filter.label}
                 </label>
@@ -260,7 +278,7 @@ function SiswaByAngkatan() {
                   <option value="">Semua {filter.label}</option>
                   {filter.options.map((item, idx) => (
                     <option key={idx} value={item}>
-                      {filter.display ? filter.display(item) : item}
+                      {item}
                     </option>
                   ))}
                 </select>
@@ -276,14 +294,14 @@ function SiswaByAngkatan() {
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
-          <p className="mt-2">Memuat data siswa...</p>
+          <p className="mt-2">Memuat data siswa/alumni...</p>
         </div>
       ) : filteredSiswa.length > 0 ? (
-        <div className="row g-4">
+        <div className="row g-3">
           {filteredSiswa.map((s, index) => (
             <div
               key={s.id}
-              className="col-12 col-sm-6 col-md-4 col-lg-3"
+              className="col-6 col-sm-4 col-md-3 col-lg-2" // Adjusted for better responsiveness
               ref={(el) => (cardRefs.current[index] = el)}
             >
               <motion.div
@@ -293,56 +311,81 @@ function SiswaByAngkatan() {
                 animate={{ opacity: 1 }}
                 transition={{ duration: 0.3 }}
               >
-                <div className="position-relative" style={{ height: "200px" }}>
+                <div 
+                  className="position-relative" 
+                  style={{ 
+                    height: "150px",
+                    backgroundColor: "#f8f9fa" // Fallback background
+                  }}
+                >
                   <img
                     src={`${baseImageUrl}${s.foto}`}
                     alt={s.name}
                     className="w-100 h-100 object-fit-cover"
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "https://via.placeholder.com/300x150?text=No+Image";
+                    }}
                   />
-                  <div className="position-absolute bottom-0 start-0 end-0 p-3 bg-gradient-dark">
+                  <div className="position-absolute bottom-0 start-0 end-0 p-2 bg-gradient-dark">
                     <div className="d-flex justify-content-between align-items-center">
                       <span
-                        className="badge"
-                        style={{ backgroundColor: "#12294A" }}
+                        className="badge text-truncate"
+                        style={{ 
+                          backgroundColor: "#12294A",
+                          maxWidth: "50%"
+                        }}
+                        title={s.keahlian}
                       >
                         {s.keahlian}
                       </span>
                       <span className="badge bg-secondary">
-                        Angkatan {s.angkatan}
+                        {s.angkatan}
                       </span>
                     </div>
                   </div>
                 </div>
 
-                <div className="card-body d-flex flex-column h-100">
-                  <h5 className="card-title fw-bold mb-1">{s.name}</h5>
-                  <p className="card-text small text-muted mb-2">
-                    {s.posisi && `${s.posisi} di `}
-                    {s.instansi || "SMK TI BAZMA"}
+                <div className="card-body p-2 d-flex flex-column">
+                  <h6 className="card-title fw-bold mb-1 text-truncate" title={s.name}>
+                    {s.name}
+                  </h6>
+                  <p className="card-text small text-muted mb-2 text-truncate" title={`${s.posisi || ''} ${s.instansi ? `di ${s.instansi}` : 'SMK TI BAZMA'}`}>
+                    {s.posisi && `${s.posisi} `}
+                    {s.instansi ? `di ${s.instansi}` : 'SMK TI BAZMA'}
                   </p>
 
                   {s.skill && (
-                    <div className="mb-3">
+                    <div className="mb-2">
                       {s.skill
                         .split(",")
-                        .slice(0, 3)
+                        .slice(0, 2) // Show only 2 skills on mobile
                         .map((skill, i) => (
                           <span
                             key={i}
-                            className="badge bg-light text-dark me-1 mb-1"
+                            className="badge bg-light text-dark me-1 mb-1 small"
                           >
                             {skill.trim()}
                           </span>
                         ))}
+                      {s.skill.split(",").length > 2 && (
+                        <span className="badge bg-light text-dark small">
+                          +{s.skill.split(",").length - 2}
+                        </span>
+                      )}
                     </div>
                   )}
 
                   <button
-                    className="btn w-100 mt-auto"
-                    style={{ backgroundColor: "#12294A", color: "white" }}
+                    className="btn btn-sm w-100 mt-auto"
+                    style={{ 
+                      backgroundColor: "#12294A", 
+                      color: "white",
+                      fontSize: "0.75rem"
+                    }}
                     onClick={() => navigate(`/siswa/${s.id}`)}
                   >
-                    Lihat Profil <i className="bi bi-arrow-right ms-2"></i>
+                    Lihat Profil <i className="bi bi-arrow-right ms-1"></i>
                   </button>
                 </div>
               </motion.div>
@@ -359,11 +402,12 @@ function SiswaByAngkatan() {
             Coba gunakan kata kunci atau filter yang berbeda
           </p>
           <button
-            className="btn btn-primary"
+            className="btn"
+            style={{ backgroundColor: "#12294A", color: "white" }}
             onClick={() => {
               setSearchTerm("");
               setFilters({
-                angkatan: "all",
+                angkatan: angkatan || "all",
                 keahlian: "",
                 skill: "",
                 daerah: "",

@@ -231,7 +231,7 @@ function Home() {
     if (!track) return;
 
     let animationFrame;
-    const speed = 0.5;
+    const speed = 0.15;
     const scroll = () => {
       track.scrollLeft += speed;
       if (track.scrollLeft >= track.scrollWidth / 2) {
@@ -322,8 +322,8 @@ function Home() {
                 mereka.
               </p>
               <p className="text-justify">
-                BEST adalah platform untuk menampilkan portofolio siswa SMK.
-                Siswa dapat membagikan proyek mereka secara online dan
+                BEST adalah platform untuk menampilkan portofolio siswa/alumni SMK.
+                Siswa/alumni dapat membagikan proyek mereka secara online dan
                 masyarakat bisa mengakses informasi tersebut dengan mudah.
               </p>
               <div className="d-flex flex-wrap gap-2 mt-3">
@@ -337,7 +337,7 @@ function Home() {
                 className="btn text-black mt-4"
                 style={{ backgroundColor: "white" }}
               >
-                Lihat Siswa
+                Lihat Siswa/Alumni
               </Link>
             </div>
             <div className="col-12 col-md-6 d-flex justify-content-center">
@@ -365,12 +365,10 @@ function Home() {
       >
         <div className="d-flex flex-column align-items-center justify-content-center mx-auto">
           <h2 className="text-center fw-bold mb-3 text-black col-12 col-md-8">
-            Jejak Alumni, Cermin Keberhasilan dan Kebermanfaatan
+            Jejak Alumni
           </h2>
-          <p className="text-center mb-4 text-black col-12 col-md-6 ">
-            Dari ruang kelas menuju perusahaan terkemuka, alumni kami
-            membuktikan bahwa mimpi besar bisa terwujud melalui kerja keras dan
-            kompetensi.
+          <p className="text-center mb-4 text-black col-12 col-md-10 ">
+            Profil alumni berikut mencerminkan bahwa lulusan SMK TI BAZMA telah menempuh proses pembelajaran yang membekali mereka dengan keterampilan dan sikap kerja yang selaras dengan kebutuhan dunia profesional. Kehadiran mereka di berbagai bidang menjadi bagian dari kontribusi kecil yang terus bertumbuh, seiring dengan perjalanan belajar yang tidak berhenti setelah masa sekolah berakhir.
           </p>
         </div>
 
@@ -561,7 +559,7 @@ function Home() {
             Temukan Talenta Terbaik
           </h2>
           <p className="text-muted text-center">
-            Jelajahi profil siswa berbakat dari SMK TI Bazma dan temukan
+            Jelajahi profil siswa/alumni berbakat dari SMK TI BAZMA dan temukan
             kolaborator terbaik untuk proyek anda.
           </p>
         </div>
@@ -702,13 +700,13 @@ function Home() {
               ))
             ) : (
               <div className="text-center text-muted mt-4">
-                <p>❌ Tidak ada siswa yang cocok dengan filter.</p>
+                <p>❌ Tidak ada siswa/alumni yang cocok dengan filter.</p>
               </div>
             )
           ) : (
             <div className="text-center text-muted mt-4">
               <p>
-                🔍 Gunakan filter di atas untuk mulai menelusuri data siswa.
+                🔍 Gunakan filter di atas untuk mulai menelusuri data siswa/alumni.
               </p>
             </div>
           )}
@@ -727,10 +725,10 @@ function Home() {
         <div className="container text-white">
           <div className="row align-items-center text-justify gap-">
             <div className="col-md-5">
-              <h1 className="fw-bold mb-3">Project Siswa</h1>
+              <h1 className="fw-bold mb-3">Project Siswa/Alumni</h1>
               <p>
                 Di balik setiap proyek, ada semangat belajar, kerja keras, dan
-                inovasi. Proyek-proyek ini adalah bukti bahwa siswa SMK TI BAZMA
+                inovasi. Proyek-proyek ini adalah bukti bahwa siswa/alumni SMK TI BAZMA
                 mampu menciptakan teknologi yang bermanfaat dan siap bersaing di
                 dunia industri maupun masyarakat.
               </p>
@@ -845,7 +843,7 @@ function Home() {
 
       {/* Partners Section */}
       <motion.div
-        className="my-5 py-5"
+        className="mt-5 py-5"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -886,7 +884,7 @@ function Home() {
       </motion.div>
       {/* Testimonials Section */}
       <motion.div
-        className="container my-5 py-5"
+        className="container my-2 py-5"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -894,18 +892,18 @@ function Home() {
       >
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center mb-5">
           <div className="text-center text-md-start mb-4 mb-md-0">
-            <h2 className="fw-bold mb-2">What Our Clients Say</h2>
+            <h2 className="fw-bold mb-2">Kata Mereka</h2>
             <p className="text-muted">
               Trusted by professionals and organizations
             </p>
           </div>
-          {/*<button
+          <button
             className="btn btn-primary px-4 py-3 rounded-pill d-flex align-items-center"
             onClick={() => setShowTestimoniForm(true)}
           >
             <i className="bi bi-plus-circle me-2"></i>
             Add Testimonial
-          </button>*/}
+          </button>
         </div>
 
         <div className="row g-4">
