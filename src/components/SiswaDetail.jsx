@@ -176,9 +176,9 @@ function SiswaDetail() {
                     }
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="btn btn-outline-dark px-4"
+                    className="btn btn-outline-light px-4"
                   >
-                    <i className="bi bi-image me-2"></i> Portofolio
+                    <i className="bi bi-box-arrow-up-right me-2"></i> Portofolio
                   </a>
                 )}
               </div>
