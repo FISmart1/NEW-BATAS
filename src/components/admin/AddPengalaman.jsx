@@ -23,12 +23,16 @@ function AddPengalaman() {
   }, []);
 
   const fetchSiswa = async () => {
-    const res = await axios.get("https://backend_best.smktibazma.com/api/getsiswa");
+    const res = await axios.get(
+      "https://backend_best.smktibazma.com/api/getsiswa"
+    );
     setSiswaList(res.data || []);
   };
 
   const fetchData = async () => {
-    const res = await axios.get("https://backend_best.smktibazma.com/api/pengalaman");
+    const res = await axios.get(
+      "https://backend_best.smktibazma.com/api/pengalaman"
+    );
     setList(res.data || []);
   };
 
@@ -40,7 +44,10 @@ function AddPengalaman() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-    Object.entries(formData).forEach(([k, v]) => data.append(k, v));
+
+    // Jangan kirim id
+    const { id, ...safeFormData } = formData;
+    Object.entries(safeFormData).forEach(([k, v]) => data.append(k, v));
     if (foto) data.append("foto", foto);
 
     try {
@@ -51,9 +58,10 @@ function AddPengalaman() {
         );
         alert("Pengalaman diperbarui");
       } else {
-        const id = crypto.randomUUID(); // native UUID
-        data.set("id", id);
-        await axios.post("https://backend_best.smktibazma.com/api/pengalaman", data);
+        await axios.post(
+          "https://backend_best.smktibazma.com/api/pengalaman",
+          data
+        );
         alert("Pengalaman ditambahkan");
       }
 
@@ -82,7 +90,9 @@ function AddPengalaman() {
   const handleDelete = async (id) => {
     if (window.confirm("Yakin ingin menghapus pengalaman ini?")) {
       try {
-        await axios.delete(`https://backend_best.smktibazma.com/api/pengalaman/${id}`);
+        await axios.delete(
+          `https://backend_best.smktibazma.com/api/pengalaman/${id}`
+        );
         fetchData();
         alert("Data dihapus");
       } catch (err) {

@@ -89,7 +89,7 @@ const EditSiswa = () => {
         setShowCropModal(true);
       };
       reader.readAsDataURL(compressedFile);
-
+      alert("Gambar berhasil dikompres.");
       // Simpan sementara file asli hasil kompres
       setFotoFile(compressedFile);
     } catch (error) {
@@ -190,11 +190,11 @@ const EditSiswa = () => {
         await axios.delete(
           `https://backend_best.smktibazma.com/api/pengalaman/${pengalamanId}`
         );
-        toast.success("Pengalaman berhasil dihapus");
+        alert("Pengalaman berhasil dihapus");
         await refreshSiswa();
       } catch (err) {
         console.error("Gagal menghapus pengalaman:", err);
-        toast.error("Gagal menghapus pengalaman");
+        alert("Gagal menghapus pengalaman");
       }
     }
   };
@@ -206,11 +206,11 @@ const EditSiswa = () => {
         await axios.delete(
           `https://backend_best.smktibazma.com/api/delproject/${projectId}`
         );
-        toast.success("Proyek berhasil dihapus");
+        alert("Proyek berhasil dihapus");
         await refreshSiswa();
       } catch (err) {
         console.error("Gagal menghapus proyek:", err);
-        toast.error("Gagal menghapus proyek");
+        alert("Gagal menghapus proyek");
       }
     }
   };
@@ -245,7 +245,7 @@ const EditSiswa = () => {
       );
 
       if (response.status === 200) {
-        toast.success("Profil berhasil diperbarui!");
+        alert("Profil berhasil diperbarui!");
         const res = await axios.get(
           `https://backend_best.smktibazma.com/api/siswa/${id}`
         );
@@ -256,7 +256,7 @@ const EditSiswa = () => {
         document.getElementById("fotoInput").value = ""; // Reset input file
         setCvFile(null);
       } else {
-        toast.error("Gagal memperbarui profil");
+        alert("Gagal memperbarui profil");
       }
     } catch (err) {
       console.error("Update error:", err.response?.data || err);

@@ -154,6 +154,7 @@ function SiswaDetail() {
                   {siswa.instansi}
                 </span>
               </div>
+              <p className="text-white">Jumlah hafalan :{siswa.hafalan}</p>
 
               <div className="d-flex flex-wrap gap-3 mb-4">
                 {siswa.cv && (
