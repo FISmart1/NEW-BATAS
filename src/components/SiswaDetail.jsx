@@ -212,7 +212,7 @@ function SiswaDetail() {
               <i className="bi bi-person-lines-fill me-2 "></i> About Me
             </h3>
             <div className=" p-4 rounded-3">
-              <p className=" mb-0" style={{ whiteSpace: "pre-line" }}>
+              <p className=" mb-0">
                 {siswa.deskripsi || "No description available."}
               </p>
             </div>
